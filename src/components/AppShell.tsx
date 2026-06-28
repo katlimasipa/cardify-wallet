@@ -3,13 +3,14 @@ import { Home, Wallet, Plus, Star, Settings } from "lucide-react";
 import type { ReactNode } from "react";
 import { BrandFooter } from "./BrandFooter";
 
-const tabs = [
+type Tab = { to: string; label: string; icon: typeof Home; prominent?: boolean };
+const tabs: Tab[] = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/cards", label: "Cards", icon: Wallet },
   { to: "/cards/new", label: "Add", icon: Plus, prominent: true },
   { to: "/favorites", label: "Favorites", icon: Star },
   { to: "/settings", label: "Settings", icon: Settings },
-] as const;
+];
 
 export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
