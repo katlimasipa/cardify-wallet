@@ -36,7 +36,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
             return (
               <Link
                 key={to}
-                to={to}
+                to={to as any}
                 className="group relative flex min-w-0 flex-1 items-center justify-center"
                 aria-label={label}
               >
