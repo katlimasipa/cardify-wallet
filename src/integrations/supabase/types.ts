@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cards: {
+        Row: {
+          barcode_format: string
+          barcode_value: string
+          category: string
+          color: string | null
+          created_at: string
+          expiry_date: string | null
+          id: string
+          image_url: string | null
+          is_favorite: boolean
+          last_opened_at: string | null
+          membership_number: string | null
+          name: string
+          notes: string | null
+          open_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          barcode_format?: string
+          barcode_value: string
+          category?: string
+          color?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_favorite?: boolean
+          last_opened_at?: string | null
+          membership_number?: string | null
+          name: string
+          notes?: string | null
+          open_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          barcode_format?: string
+          barcode_value?: string
+          category?: string
+          color?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_favorite?: boolean
+          last_opened_at?: string | null
+          membership_number?: string | null
+          name?: string
+          notes?: string | null
+          open_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
