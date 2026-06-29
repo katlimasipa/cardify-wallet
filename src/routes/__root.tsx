@@ -18,7 +18,7 @@ function NotFoundComponent() {
       <div>
         <div className="font-display text-7xl font-bold">404</div>
         <p className="mt-3 text-muted-foreground">This card isn't in your vault.</p>
-        <a href="/" className="mt-6 inline-block rounded-full aurora-bg px-5 py-2.5 text-sm font-medium text-white">Go home</a>
+        <a href="/" className="mt-6 inline-block rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background">Go home</a>
       </div>
     </div>
   );
@@ -32,7 +32,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <div>
         <h1 className="font-display text-2xl font-semibold">Something went wrong</h1>
         <p className="mt-2 text-sm text-muted-foreground">Please try again.</p>
-        <button onClick={() => { router.invalidate(); reset(); }} className="mt-6 rounded-full aurora-bg px-5 py-2.5 text-sm font-medium text-white">Try again</button>
+        <button onClick={() => { router.invalidate(); reset(); }} className="mt-6 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background">Try again</button>
       </div>
     </div>
   );
@@ -45,7 +45,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" },
       { title: "CardVault — Loyalty Card Wallet" },
       { name: "description", content: "Securely store, scan and access all your loyalty and rewards cards in one premium wallet." },
-      { name: "theme-color", content: "#1a0f30" },
+      { name: "theme-color", content: "#0d0c0a" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "CardVault" },
