@@ -12,6 +12,7 @@ export interface Card {
   expiry_date: string | null;
   color: string | null;
   image_url: string | null;
+  back_image_url: string | null;
   is_favorite: boolean;
   open_count: number;
   last_opened_at: string | null;
