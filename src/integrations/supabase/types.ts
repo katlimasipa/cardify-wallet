@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       cards: {
         Row: {
+          back_image_url: string | null
           barcode_format: string
           barcode_value: string
           category: string
@@ -34,6 +35,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          back_image_url?: string | null
           barcode_format?: string
           barcode_value: string
           category?: string
@@ -52,6 +54,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          back_image_url?: string | null
           barcode_format?: string
           barcode_value?: string
           category?: string

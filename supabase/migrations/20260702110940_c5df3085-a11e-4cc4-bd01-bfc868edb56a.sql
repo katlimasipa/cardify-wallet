@@ -1,0 +1,1 @@
+ALTER TABLE public.cards ADD COLUMN IF NOT EXISTS back_image_url TEXT;
