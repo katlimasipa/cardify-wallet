@@ -2,11 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, ScanLine, X } from "lucide-react";
+import { ArrowLeft, Camera, Loader2, ScanLine, Upload, X } from "lucide-react";
 import { z } from "zod";
 import { createCard } from "@/lib/cards";
 import { CATEGORIES, BARCODE_FORMATS, type BarcodeFormat } from "@/lib/categories";
 import { BarcodeView } from "@/components/BarcodeView";
+import { compressImage } from "@/lib/image";
+import { BrowserMultiFormatReader } from "@zxing/browser";
+import { BarcodeFormat as ZXFormat, DecodeHintType } from "@zxing/library";
 
 export const Route = createFileRoute("/_authenticated/cards/new")({
   head: () => ({ meta: [{ title: "Add Card — CardVault" }] }),
@@ -26,6 +29,8 @@ function AddCard() {
   const [color, setColor] = useState(COLORS[0]);
   const [notes, setNotes] = useState("");
   const [expiry, setExpiry] = useState("");
+  const [frontImg, setFrontImg] = useState<string | null>(null);
+  const [backImg, setBackImg] = useState<string | null>(null);
 
   const mut = useMutation({
     mutationFn: createCard,
@@ -58,6 +63,8 @@ function AddCard() {
       color,
       notes: notes.trim() || null,
       expiry_date: expiry || null,
+      image_url: frontImg,
+      back_image_url: backImg,
     });
   }
 
@@ -72,7 +79,7 @@ function AddCard() {
       </div>
 
       <h1 className="mt-8 font-display text-[2.25rem] font-semibold leading-none tracking-[-0.03em]">Add a card</h1>
-      <p className="mt-2 text-[13px] text-muted-foreground">Scan or enter the details manually.</p>
+      <p className="mt-2 text-[13px] text-muted-foreground">Scan, upload or enter manually.</p>
 
       <Scanner onResult={(val, fmt) => { setBarcode(val); if (fmt) setFormat(fmt); toast.success("Barcode captured"); }} />
 
@@ -122,6 +129,14 @@ function AddCard() {
           </div>
         )}
 
+        <Field label="Card photos (optional)">
+          <div className="grid grid-cols-2 gap-2.5">
+            <ImagePicker label="Front" value={frontImg} onChange={setFrontImg} />
+            <ImagePicker label="Back" value={backImg} onChange={setBackImg} />
+          </div>
+          <span className="mt-1.5 px-1 text-[11px] text-muted-foreground">Keep a digital copy of the actual card, just like in your wallet.</span>
+        </Field>
+
         <Field label="Card color">
           <div className="flex flex-wrap gap-2">
             {COLORS.map((c) => (
@@ -167,58 +182,154 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function ImagePicker({ label, value, onChange }: { label: string; value: string | null; onChange: (v: string | null) => void }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function handle(file: File) {
+    setBusy(true);
+    try {
+      const url = await compressImage(file);
+      onChange(url);
+    } catch {
+      toast.error("Could not read image");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="relative">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) handle(f); e.target.value = ""; }}
+      />
+      {value ? (
+        <div className="group relative aspect-[1.586/1] overflow-hidden rounded-2xl border border-hairline">
+          <img src={value} alt={label} className="h-full w-full object-cover" />
+          <button
+            type="button"
+            onClick={() => onChange(null)}
+            className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white"
+            aria-label={`Remove ${label}`}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+          <div className="absolute bottom-1.5 left-2 text-[10px] uppercase tracking-[0.22em] text-white/85">{label}</div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="flex aspect-[1.586/1] w-full flex-col items-center justify-center gap-1.5 rounded-2xl surface text-muted-foreground tap"
+        >
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" strokeWidth={1.75} />}
+          <span className="text-[11px] font-medium">{label}</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function Scanner({ onResult }: { onResult: (value: string, format?: BarcodeFormat) => void }) {
   const [open, setOpen] = useState(false);
-  const [supported, setSupported] = useState<boolean | null>(null);
+  const [status, setStatus] = useState("Align the barcode in the frame");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    setSupported(typeof window !== "undefined" && "BarcodeDetector" in window);
-  }, []);
+  const zxingRef = useRef<BrowserMultiFormatReader | null>(null);
 
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
+    let stopZxing: (() => void) | null = null;
+
+    const zxMap: Record<string, BarcodeFormat> = {
+      CODE_128: "CODE128", EAN_13: "EAN13", EAN_8: "EAN13",
+      UPC_A: "UPC", UPC_E: "UPC", QR_CODE: "QR",
+      PDF_417: "PDF417", DATA_MATRIX: "DATAMATRIX",
+    };
+    const nativeMap: Record<string, BarcodeFormat> = {
+      code_128: "CODE128", ean_13: "EAN13", ean_8: "EAN13",
+      upc_a: "UPC", upc_e: "UPC", qr_code: "QR",
+      pdf417: "PDF417", data_matrix: "DATAMATRIX",
+    };
+
     (async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        });
+        if (cancelled) { stream.getTracks().forEach((t) => t.stop()); return; }
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute("playsinline", "true");
           await videoRef.current.play();
         }
-        const Detector = (window as any).BarcodeDetector;
-        if (!Detector) return;
-        const detector = new Detector({ formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e", "qr_code", "pdf417", "data_matrix"] });
-        const tick = async () => {
-          if (!videoRef.current || cancelled) return;
-          try {
-            const codes = await detector.detect(videoRef.current);
-            if (codes.length > 0) {
-              const code = codes[0];
-              const map: Record<string, BarcodeFormat> = { code_128: "CODE128", ean_13: "EAN13", upc_a: "UPC", qr_code: "QR", pdf417: "PDF417", data_matrix: "DATAMATRIX" };
-              onResult(code.rawValue, map[code.format as string]);
-              navigator.vibrate?.(50);
-              setOpen(false);
-              return;
-            }
-          } catch {}
-          rafRef.current = requestAnimationFrame(tick);
+
+        const finish = (value: string, fmt?: BarcodeFormat) => {
+          if (cancelled) return;
+          navigator.vibrate?.(50);
+          onResult(value, fmt);
+          setOpen(false);
         };
-        rafRef.current = requestAnimationFrame(tick);
+
+        // Prefer native BarcodeDetector when available (Chrome/Android)
+        const Detector = (window as any).BarcodeDetector;
+        if (Detector) {
+          setStatus("Point at the barcode");
+          const detector = new Detector({
+            formats: ["code_128", "ean_13", "ean_8", "upc_a", "upc_e", "qr_code", "pdf417", "data_matrix"],
+          });
+          const tick = async () => {
+            if (!videoRef.current || cancelled) return;
+            try {
+              const codes = await detector.detect(videoRef.current);
+              if (codes && codes.length > 0) {
+                finish(codes[0].rawValue, nativeMap[codes[0].format as string]);
+                return;
+              }
+            } catch {}
+            rafRef.current = requestAnimationFrame(tick);
+          };
+          rafRef.current = requestAnimationFrame(tick);
+          return;
+        }
+
+        // Fallback: ZXing (iOS Safari, Firefox)
+        setStatus("Scanning…");
+        const hints = new Map();
+        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+          ZXFormat.CODE_128, ZXFormat.EAN_13, ZXFormat.EAN_8,
+          ZXFormat.UPC_A, ZXFormat.UPC_E, ZXFormat.QR_CODE,
+          ZXFormat.PDF_417, ZXFormat.DATA_MATRIX, ZXFormat.CODE_39, ZXFormat.ITF,
+        ]);
+        const reader = new BrowserMultiFormatReader(hints, { delayBetweenScanAttempts: 120 });
+        zxingRef.current = reader;
+        const controls = await reader.decodeFromStream(stream, videoRef.current!, (result) => {
+          if (!result || cancelled) return;
+          const fmtName = ZXFormat[result.getBarcodeFormat()] as string;
+          finish(result.getText(), zxMap[fmtName]);
+        });
+        stopZxing = () => controls.stop();
       } catch {
         toast.error("Camera unavailable. Enter the barcode manually.");
         setOpen(false);
       }
     })();
+
     return () => {
       cancelled = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      stopZxing?.();
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
+      zxingRef.current = null;
     };
   }, [open, onResult]);
 
@@ -226,25 +337,39 @@ function Scanner({ onResult }: { onResult: (value: string, format?: BarcodeForma
     <>
       <button type="button" onClick={() => setOpen(true)}
         className="mt-7 flex w-full items-center justify-between rounded-2xl surface px-5 py-4 text-left tap">
-        <div>
-          <div className="text-[14px] font-medium">Scan a barcode</div>
-          <div className="text-[11px] text-muted-foreground">Use your camera</div>
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-foreground text-background">
+            <ScanLine className="h-4 w-4" strokeWidth={1.75} />
+          </span>
+          <div>
+            <div className="text-[14px] font-medium">Scan a barcode</div>
+            <div className="text-[11px] text-muted-foreground">Live camera detection</div>
+          </div>
         </div>
-        <ScanLine className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
+        <Camera className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/90 backdrop-blur-md p-4">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/95 p-4">
           <div className="relative w-full max-w-md overflow-hidden rounded-3xl bg-black">
             <video ref={videoRef} playsInline muted className="aspect-[3/4] w-full object-cover" />
-            <div className="pointer-events-none absolute inset-8 rounded-2xl border border-white/70" />
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute inset-x-8 top-1/2 h-40 -translate-y-1/2 rounded-2xl border border-white/70 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
+              <div className="scanline absolute left-8 right-8 top-1/2 -mt-20 h-40 overflow-hidden rounded-2xl">
+                <div className="absolute inset-x-0 h-[2px] animate-scanline bg-white/90" />
+              </div>
+            </div>
             <button onClick={() => setOpen(false)} className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur">
               <X className="h-4 w-4" />
             </button>
-            <div className="absolute inset-x-0 bottom-4 text-center text-[11px] tracking-wide text-white/70">
-              {supported === false ? "Live detection unsupported" : "Align the barcode in the frame"}
+            <div className="absolute inset-x-0 bottom-4 text-center text-[11px] tracking-wide text-white/75">
+              {status}
             </div>
           </div>
+          <style>{`
+            @keyframes scanline { 0% { transform: translateY(0); } 100% { transform: translateY(160px); } }
+            .animate-scanline { animation: scanline 1.6s ease-in-out infinite alternate; }
+          `}</style>
         </div>
       )}
     </>
