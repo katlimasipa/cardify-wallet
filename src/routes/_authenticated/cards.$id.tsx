@@ -89,6 +89,26 @@ function CardDetail() {
         <div className="mt-3 text-center font-mono text-[12px] tracking-[0.22em] text-muted-foreground">{card.barcode_value}</div>
       </div>
 
+      {(card.image_url || card.back_image_url) && (
+        <div className="mt-6">
+          <div className="mb-2 px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Physical card</div>
+          <div className={`grid gap-2.5 ${card.image_url && card.back_image_url ? "grid-cols-2" : "grid-cols-1"}`}>
+            {card.image_url && (
+              <figure className="overflow-hidden rounded-2xl border border-hairline bg-black/5">
+                <img src={card.image_url} alt={`${card.name} front`} className="aspect-[1.586/1] w-full object-cover" />
+                <figcaption className="px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Front</figcaption>
+              </figure>
+            )}
+            {card.back_image_url && (
+              <figure className="overflow-hidden rounded-2xl border border-hairline bg-black/5">
+                <img src={card.back_image_url} alt={`${card.name} back`} className="aspect-[1.586/1] w-full object-cover" />
+                <figcaption className="px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Back</figcaption>
+              </figure>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="mt-5 grid grid-cols-2 gap-2">
         <button onClick={() => setBright((b) => !b)} className="flex items-center justify-center gap-2 rounded-full surface py-3 text-[13px] font-medium tap">
           <Sun className="h-4 w-4" strokeWidth={1.75} /> {bright ? "Normal" : "Brighten"}
