@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { Card } from "@/lib/cards";
 import { getCategory } from "@/lib/categories";
+import { ArrowUpRight, Star } from "lucide-react";
 
 export function CardTile({ card }: { card: Card }) {
   const cat = getCategory(card.category);
@@ -15,30 +16,30 @@ export function CardTile({ card }: { card: Card }) {
       className="group block w-full tap"
     >
       <article
-        className="relative flex h-[122px] w-full overflow-hidden rounded-[22px] p-5 text-white card-shadow"
+        className="membership-card relative flex aspect-[1.9/1] min-h-[132px] w-full overflow-hidden rounded-[18px] p-5 text-card-face-foreground card-shadow"
         style={{ background: bg }}
       >
-        {/* subtle inner highlight */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/15" />
-        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/[0.06] blur-2xl" />
+        <div className="card-noise pointer-events-none absolute inset-0" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-card-face-foreground/20" />
 
         <div className="relative flex flex-1 flex-col justify-between min-w-0">
           <div className="min-w-0">
-            <div className="text-[10px] uppercase tracking-[0.22em] text-white/55">{cat.label}</div>
-            <h3 className="mt-1 truncate font-display text-[1.05rem] font-semibold leading-tight">{card.name}</h3>
+            <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-card-face-foreground/55">{cat.label}</div>
+            <h3 className="mt-2 truncate font-display text-[1.2rem] font-semibold leading-tight">{card.name}</h3>
           </div>
           {card.membership_number ? (
-            <div className="font-mono text-[11px] tracking-[0.18em] text-white/70 truncate">
+            <div className="font-mono text-[11px] tracking-[0.16em] text-card-face-foreground/70 truncate">
               {card.membership_number}
             </div>
           ) : (
-            <div className="text-[11px] text-white/45">No number</div>
+            <div className="text-[10px] uppercase tracking-[0.16em] text-card-face-foreground/45">Digital membership</div>
           )}
         </div>
 
-        {card.is_favorite && (
-          <div className="absolute right-4 top-4 h-1.5 w-1.5 rounded-full bg-white/90" aria-label="Favorite" />
-        )}
+        <div className="relative ml-4 flex flex-col items-end justify-between">
+          <ArrowUpRight className="h-4 w-4 text-card-face-foreground/55 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          {card.is_favorite && <Star className="h-3.5 w-3.5 fill-card-face-foreground text-card-face-foreground" aria-label="Favorite" />}
+        </div>
       </article>
     </Link>
   );

@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Wallet, Plus, Star, Settings } from "lucide-react";
 import type { ReactNode } from "react";
+import { BrandLockup } from "@/components/BrandLockup";
 
 type Tab = { to: string; label: string; icon: typeof Home; prominent?: boolean };
 const tabs: Tab[] = [
@@ -17,15 +18,16 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="relative mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
+    <div className="relative mx-auto flex min-h-dvh w-full max-w-[520px] flex-col">
       {title && (
-        <header className="sticky top-0 z-30 border-b border-hairline bg-background/85 px-5 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 backdrop-blur-xl">
-          <h1 className="font-display text-[1.65rem] font-semibold leading-none tracking-tight">{title}</h1>
+        <header className="sticky top-0 z-30 flex items-end justify-between border-b border-hairline bg-background/90 px-5 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 backdrop-blur-xl">
+          <h1 className="font-display text-[1.6rem] font-semibold leading-none">{title}</h1>
+          <BrandLockup compact />
         </header>
       )}
       <main className="flex-1 px-5 pt-5" style={{ paddingBottom: NAV_RESERVE }}>
         {children}
-        <p className="mt-12 mb-4 text-center text-[11px] tracking-wide text-muted-foreground">
+        <p className="mt-14 mb-6 text-center text-[10px] text-muted-foreground">
           Built by{" "}
           <a href="https://architeq.co.za" target="_blank" rel="noreferrer"
             className="text-foreground underline-offset-4 hover:underline">Architeq Web Agency</a>
@@ -34,9 +36,9 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
 
       <nav
         aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[480px] px-3 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2"
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[520px] px-3 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2"
       >
-        <div className="surface card-shadow flex items-center justify-between rounded-[26px] px-1.5 py-1.5">
+        <div className="nav-surface flex items-center justify-between rounded-[20px] px-1.5 py-1.5">
           {tabs.map(({ to, label, icon: Icon, prominent }) => {
             const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
             return (
@@ -47,7 +49,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                 aria-label={label}
               >
                 {prominent ? (
-                  <span className="grid h-12 w-12 -translate-y-2.5 place-items-center rounded-full bg-foreground text-background tap soft-shadow">
+                  <span className="grid h-12 w-12 -translate-y-2.5 place-items-center rounded-[15px] bg-foreground text-background tap soft-shadow">
                     <Icon className="h-5 w-5" strokeWidth={2} />
                   </span>
                 ) : (
