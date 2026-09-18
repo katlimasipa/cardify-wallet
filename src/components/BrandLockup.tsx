@@ -1,8 +1,10 @@
+import logo from "@/assets/logo.png";
+
 export function BrandLockup({ compact = false }: { compact?: boolean }) {
   return (
     <div className="flex items-center gap-2" aria-label="CardVault">
       <img
-        src="/icons/icon-192.png"
+        src={logo}
         alt=""
         className={`${compact ? "h-6 w-6" : "h-8 w-8"} object-contain`}
       />
