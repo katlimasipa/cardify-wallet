@@ -19,12 +19,14 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
 
   return (
     <div className="relative mx-auto flex min-h-dvh w-full max-w-[520px] flex-col">
-      {title && (
-        <header className="sticky top-0 z-30 flex items-end justify-between border-b border-hairline bg-background/90 px-5 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 flex min-h-[4.25rem] items-end justify-between border-b border-hairline bg-background/90 px-5 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 backdrop-blur-xl">
+        {title ? (
           <h1 className="font-display text-[1.6rem] font-semibold leading-none">{title}</h1>
-          <BrandLockup compact />
-        </header>
-      )}
+        ) : (
+          <BrandLockup />
+        )}
+        {title && <BrandLockup compact />}
+      </header>
       <main className="flex-1 px-5 pt-5" style={{ paddingBottom: NAV_RESERVE }}>
         {children}
         <p className="mt-14 mb-6 text-center text-[10px] text-muted-foreground">
