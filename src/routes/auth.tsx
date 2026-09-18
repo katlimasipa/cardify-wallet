@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { BrandLockup } from "@/components/BrandLockup";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).default("signin").catch("signin"),
@@ -12,7 +13,14 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
-  head: () => ({ meta: [{ title: "Sign in — CardVault" }] }),
+  head: () => ({ meta: [
+    { title: "Sign in — CardVault" },
+    { name: "description", content: "Sign in to access your CardVault wallet." },
+    { property: "og:title", content: "Sign in — CardVault" },
+    { property: "og:description", content: "Sign in to access your CardVault wallet." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AuthPage,
 });
 
@@ -66,7 +74,9 @@ function AuthPage() {
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
-      <div className="mt-10">
+      <div className="mt-10"><BrandLockup /></div>
+
+      <div className="mt-8">
         <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
           {isSignup ? "New vault" : "Welcome back"}
         </p>
@@ -97,7 +107,7 @@ function AuthPage() {
 
         <button
           type="submit" disabled={loading}
-          className="mt-3 flex items-center justify-center gap-2 rounded-full bg-foreground px-5 py-4 text-[15px] font-medium text-background tap disabled:opacity-60"
+          className="mt-3 flex items-center justify-center gap-2 rounded-[14px] bg-foreground px-5 py-4 text-[15px] font-semibold text-background tap soft-shadow disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSignup ? "Create account" : "Sign in"}
