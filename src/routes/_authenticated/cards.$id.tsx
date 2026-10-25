@@ -5,7 +5,9 @@ import { ArrowLeft, Star, Trash2, Sun, Maximize2, Share2, Loader2, X } from "luc
 import { toast } from "sonner";
 import { bumpOpen, deleteCard, getCard, updateCard } from "@/lib/cards";
 import { BarcodeView } from "@/components/BarcodeView";
+import { BrandLogo } from "@/components/BrandLogo";
 import { getCategory } from "@/lib/categories";
+import { matchBrand } from "@/lib/brands";
 
 export const Route = createFileRoute("/_authenticated/cards/$id")({
   head: () => ({ meta: [{ title: "Card — CardVault" }] }),

@@ -1,10 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import type { Card } from "@/lib/cards";
 import { getCategory } from "@/lib/categories";
+import { matchBrand } from "@/lib/brands";
+import { BrandLogo } from "@/components/BrandLogo";
 import { ArrowUpRight, Star } from "lucide-react";
 
 export function CardTile({ card }: { card: Card }) {
   const cat = getCategory(card.category);
+  const brand = matchBrand(card.name);
   const bg = card.color && card.color !== "#1a1a1a"
     ? `linear-gradient(155deg, ${card.color}, color-mix(in oklab, ${card.color} 55%, #000))`
     : cat.gradient;
@@ -23,9 +26,12 @@ export function CardTile({ card }: { card: Card }) {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-card-face-foreground/20" />
 
         <div className="relative flex flex-1 flex-col justify-between min-w-0">
-          <div className="min-w-0">
-            <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-card-face-foreground/55">{cat.label}</div>
-            <h3 className="mt-2 truncate font-display text-[1.2rem] font-semibold leading-tight">{card.name}</h3>
+          <div className="flex min-w-0 items-center gap-3">
+            <BrandLogo domain={brand?.domain ?? null} name={card.name} className="h-10 w-10" />
+            <div className="min-w-0">
+              <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-card-face-foreground/55">{cat.label}</div>
+              <h3 className="mt-1 truncate font-display text-[1.2rem] font-semibold leading-tight">{card.name}</h3>
+            </div>
           </div>
           {card.membership_number ? (
             <div className="font-mono text-[11px] tracking-[0.16em] text-card-face-foreground/70 truncate">
@@ -44,3 +50,4 @@ export function CardTile({ card }: { card: Card }) {
     </Link>
   );
 }
+
