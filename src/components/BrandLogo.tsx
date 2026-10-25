@@ -3,7 +3,7 @@ import { useState } from "react";
 const TOKEN = import.meta.env.VITE_LOVABLE_CONNECTOR_LOGO_DEV_API_KEY ?? "";
 
 export function logoUrl(domain: string, size = 128) {
-  const query = new URLSearchParams({ token: TOKEN, size: String(size), format: "png", fallback: "404" });
+  const query = new URLSearchParams({ token: TOKEN, size: String(size), format: "png" });
   return `https://img.logo.dev/${domain}?${query.toString()}`;
 }
 
