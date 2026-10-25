@@ -16,7 +16,7 @@ export const BRAND_PRESETS: BrandPreset[] = [
   { name: "Checkers Xtra Savings", short: "Checkers", domain: "checkers.co.za", category: "grocery", color: "#d21f2b", keywords: ["checkers"] },
   { name: "Shoprite Xtra Savings", short: "Shoprite", domain: "shoprite.co.za", category: "grocery", color: "#e2001a", keywords: ["shoprite"] },
   { name: "Woolworths WRewards", short: "Woolworths", domain: "woolworths.co.za", category: "grocery", color: "#2a2a2a", keywords: ["woolworths", "wrewards"] },
-  { name: "SPAR Rewards", short: "SPAR", domain: "thespar.co.za", category: "grocery", color: "#3f8f27", keywords: ["spar"] },
+  { name: "SPAR Rewards", short: "SPAR", domain: "spar.co.za", category: "grocery", color: "#3f8f27", keywords: ["spar"] },
   { name: "Makro mCard", short: "Makro", domain: "makro.co.za", category: "retail", color: "#b78b00", keywords: ["makro", "mcard"] },
   // Pharmacy
   { name: "Clicks ClubCard", short: "Clicks", domain: "clicks.co.za", category: "pharmacy", color: "#0b7d77", keywords: ["clicks"] },
@@ -51,7 +51,7 @@ export const BRAND_PRESETS: BrandPreset[] = [
   { name: "Sanlam Reality", short: "Sanlam", domain: "sanlam.co.za", category: "memberships", color: "#004576", keywords: ["sanlam", "reality"] },
   { name: "TymeBank Rewards", short: "TymeBank", domain: "tymebank.co.za", category: "memberships", color: "#6a2c85", keywords: ["tymebank", "tyme"] },
   // Restaurants
-  { name: "Spur Family Card", short: "Spur", domain: "spursteakhouses.co.za", category: "restaurants", color: "#c94f1e", keywords: ["spur"] },
+  { name: "Spur Family Card", short: "Spur", domain: "spursteakranches.com", category: "restaurants", color: "#c94f1e", keywords: ["spur"] },
   { name: "Kauai Rewards", short: "Kauai", domain: "kauai.co.za", category: "restaurants", color: "#4a8c2a", keywords: ["kauai"] },
   { name: "Wimpy Rewards", short: "Wimpy", domain: "wimpy.co.za", category: "restaurants", color: "#d0342c", keywords: ["wimpy"] },
   { name: "Panarottis Rewards", short: "Panarottis", domain: "panarottis.co.za", category: "restaurants", color: "#1d4f8c", keywords: ["panarottis"] },

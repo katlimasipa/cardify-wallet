@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Wallet, Plus, Star, Settings } from "lucide-react";
+import { Home, Wallet, Plus, Star, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { BrandLockup } from "@/components/BrandLockup";
 
@@ -9,7 +9,6 @@ const tabs: Tab[] = [
   { to: "/cards", label: "Cards", icon: Wallet },
   { to: "/cards/new", label: "Add", icon: Plus, prominent: true },
   { to: "/favorites", label: "Saved", icon: Star },
-  { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 const NAV_RESERVE = "calc(env(safe-area-inset-bottom) + 5.5rem)";
@@ -19,13 +18,19 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
 
   return (
     <div className="relative mx-auto flex min-h-dvh w-full max-w-[520px] flex-col">
-      <header className="sticky top-0 z-30 flex min-h-[4.25rem] items-end justify-between border-b border-hairline bg-background/90 px-5 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 flex min-h-[4.5rem] items-center justify-between border-b border-hairline bg-background/95 px-5 pt-[max(env(safe-area-inset-top),0.875rem)] pb-3 backdrop-blur-xl">
         {title ? (
-          <h1 className="font-display text-[1.6rem] font-semibold leading-none">{title}</h1>
+          <h1 className="font-display text-[1.45rem] font-semibold leading-none">{title}</h1>
         ) : (
           <BrandLockup />
         )}
-        {title && <BrandLockup compact />}
+        <Link
+          to="/settings"
+          aria-label="Account settings"
+          className="grid h-10 w-10 place-items-center rounded-full bg-white text-foreground tap"
+        >
+          <UserRound className="h-[18px] w-[18px]" strokeWidth={1.8} />
+        </Link>
       </header>
       <main className="flex-1 px-5 pt-5" style={{ paddingBottom: NAV_RESERVE }}>
         {children}
@@ -38,11 +43,11 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
 
       <nav
         aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[520px] px-3 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2"
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[520px] px-0"
       >
-        <div className="nav-surface flex items-center justify-between rounded-[20px] px-1.5 py-1.5">
+        <div className="nav-surface flex items-center justify-between px-2 pt-1.5 pb-[max(env(safe-area-inset-bottom),0.65rem)]">
           {tabs.map(({ to, label, icon: Icon, prominent }) => {
-            const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
+            const active = pathname === to || (to === "/cards" && pathname.startsWith("/cards/") && pathname !== "/cards/new");
             return (
               <Link
                 key={to}
@@ -51,7 +56,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                 aria-label={label}
               >
                 {prominent ? (
-                  <span className="grid h-12 w-12 -translate-y-2.5 place-items-center rounded-[15px] bg-foreground text-background tap soft-shadow">
+                  <span className="grid h-11 w-14 -translate-y-1.5 place-items-center rounded-full bg-[#0b7657] text-white tap soft-shadow">
                     <Icon className="h-5 w-5" strokeWidth={2} />
                   </span>
                 ) : (

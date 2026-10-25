@@ -43,33 +43,33 @@
 :root {
   --radius: 1.125rem;
   /* Light — warm ivory + deep ink, single copper accent */
-  --background: oklch(0.985 0.008 85);
-  --foreground: oklch(0.16 0.012 65);
-  --ink: oklch(0.16 0.012 65);
-  --surface: oklch(0.975 0.01 80);
-  --surface-2: oklch(0.96 0.012 80);
-  --hairline: oklch(0.88 0.015 75);
+  --background: oklch(0.975 0.003 250);
+  --foreground: oklch(0.18 0.008 250);
+  --ink: oklch(0.18 0.008 250);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.955 0.004 250);
+  --hairline: oklch(0.89 0.005 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.012 65);
+  --card-foreground: oklch(0.18 0.008 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.012 65);
-  --primary: oklch(0.16 0.012 65);
-  --primary-foreground: oklch(0.98 0.008 85);
-  --secondary: oklch(0.94 0.012 80);
-  --secondary-foreground: oklch(0.16 0.012 65);
-  --muted: oklch(0.94 0.012 80);
-  --muted-foreground: oklch(0.5 0.015 70);
-  --accent: oklch(0.7 0.14 55);
-  --accent-foreground: oklch(0.16 0.012 65);
+  --popover-foreground: oklch(0.18 0.008 250);
+  --primary: oklch(0.43 0.11 160);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.945 0.004 250);
+  --secondary-foreground: oklch(0.18 0.008 250);
+  --muted: oklch(0.945 0.004 250);
+  --muted-foreground: oklch(0.49 0.012 250);
+  --accent: oklch(0.52 0.12 160);
+  --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.9 0.012 78);
   --input: oklch(0.9 0.012 78);
-  --ring: oklch(0.7 0.14 55);
-  --card-face-foreground: oklch(0.97 0.01 85);
+  --ring: oklch(0.52 0.12 160);
+  --card-face-foreground: oklch(0.98 0 0);
 
-  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.04), 0 8px 24px -12px oklch(0 0 0 / 0.08);
-  --shadow-card: 0 22px 50px -28px oklch(0.16 0.012 65 / 0.35), 0 4px 12px -6px oklch(0 0 0 / 0.06);
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.04), 0 6px 18px -12px oklch(0 0 0 / 0.1);
+  --shadow-card: 0 18px 38px -28px oklch(0.18 0.008 250 / 0.38), 0 3px 9px -6px oklch(0 0 0 / 0.08);
 }
 
 .dark {
@@ -156,10 +156,9 @@
 }
 
 @utility nav-surface {
-  background: color-mix(in oklab, var(--color-surface) 92%, transparent);
-  border: 1px solid var(--color-hairline);
-  box-shadow: 0 14px 40px -18px oklch(0 0 0 / 0.5);
-  backdrop-filter: blur(18px);
+  background: var(--color-background);
+  border-top: 1px solid var(--color-hairline);
+  box-shadow: 0 -8px 24px -20px oklch(0 0 0 / 0.25);
 }
 
 .membership-card {
@@ -169,7 +168,7 @@
 }
 
 .card-noise {
-  opacity: 0.14;
+  opacity: 0.05;
   background-image: radial-gradient(oklch(1 0 0 / 0.28) 0.55px, transparent 0.55px);
   background-size: 4px 4px;
   mix-blend-mode: soft-light;
