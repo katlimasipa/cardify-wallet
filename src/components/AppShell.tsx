@@ -3,7 +3,8 @@ import { Home, Wallet, Plus, Star, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { BrandLockup } from "@/components/BrandLockup";
 
-type Tab = { to: string; label: string; icon: typeof Home; prominent?: boolean };
+type TabPath = "/dashboard" | "/cards" | "/cards/new" | "/favorites";
+type Tab = { to: TabPath; label: string; icon: typeof Home; prominent?: boolean };
 const tabs: Tab[] = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/cards", label: "Cards", icon: Wallet },
@@ -35,7 +36,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
               return (
                 <Link
                   key={to}
-                  to={to as any}
+                  to={to}
                   aria-current={active ? "page" : undefined}
                   className={prominent
                     ? "ml-2 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground transition hover:opacity-90"
@@ -74,7 +75,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           {tabs.map(({ to, label, icon: Icon, prominent }) => {
             const active = isActive(to);
             return (
-              <Link key={to} to={to as any} aria-label={label} aria-current={active ? "page" : undefined}
+              <Link key={to} to={to} aria-label={label} aria-current={active ? "page" : undefined}
                 className={`flex min-h-11 min-w-0 flex-1 items-center justify-center rounded-full transition ${prominent ? "bg-primary text-primary-foreground" : active ? "text-primary" : "text-muted-foreground"}`}>
                 {prominent ? <Icon className="h-5 w-5" strokeWidth={2} /> : (
                   <span className="flex flex-col items-center gap-0.5 px-2 py-1 text-[9px] font-medium">
