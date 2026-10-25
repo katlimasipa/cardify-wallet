@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { bumpOpen, deleteCard, getCard, updateCard } from "@/lib/cards";
 import { BarcodeView } from "@/components/BarcodeView";
 import { BrandLogo } from "@/components/BrandLogo";
+import { BrandCardArtwork } from "@/components/BrandCardArtwork";
 import { getCategory } from "@/lib/categories";
 import { matchBrand } from "@/lib/brands";
 import { getCardFace } from "@/lib/card-face";
@@ -44,7 +45,8 @@ function CardDetail() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["cards"] }); toast.success("Deleted"); navigate({ to: "/cards" }); },
   });
 
-  const cat = useMemo(() => card ? getCategory(card.category) : null, [card]);
+  const brand = useMemo(() => card ? matchBrand(card.name) : null, [card]);
+  const cat = useMemo(() => card ? getCategory(brand?.category ?? card.category) : null, [card, brand]);
 
   if (isLoading || !card || !cat) {
     return <div className="grid min-h-dvh place-items-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
@@ -55,7 +57,7 @@ function CardDetail() {
   return (
     <div className={`mx-auto min-h-dvh w-full max-w-[480px] px-6 pt-[max(env(safe-area-inset-top),1.25rem)] pb-[max(env(safe-area-inset-bottom),2.5rem)] ${bright ? "text-black" : ""}`}>
       <div className="flex items-center justify-between">
-        <button onClick={() => navigate({ to: "/cards" })} aria-label="Back to cards" className="grid h-10 w-10 place-items-center rounded-xl surface tap">
+        <button onClick={() => navigate({ to: "/cards" })} aria-label="Back to cards" className="grid h-10 w-10 place-items-center rounded-full surface tap">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div className="flex gap-2">
@@ -72,9 +74,15 @@ function CardDetail() {
       </div>
 
       <div className="mt-7">
-        <div className="membership-card relative overflow-hidden rounded-[20px] p-6 text-card-face-foreground card-shadow" style={{ backgroundColor: face.background, "--card-face-foreground": face.foreground } as React.CSSProperties}>
-          <div className="relative flex items-start gap-3">
-            <BrandLogo domain={matchBrand(card.name)?.domain ?? null} name={card.name} className="h-11 w-11" />
+        <div className="membership-card relative aspect-[1.586/1] min-h-[210px] overflow-hidden rounded-[22px] p-6 text-card-face-foreground card-shadow" style={{ backgroundColor: face.background, "--card-face-foreground": card.image_url ? "#ffffff" : face.foreground } as React.CSSProperties}>
+          {card.image_url ? (
+            <>
+              <img src={card.image_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/5 to-black/70" />
+            </>
+          ) : <BrandCardArtwork face={face.design} />}
+          <div className="relative z-10 flex items-start gap-3">
+            {!card.image_url && <BrandLogo domain={brand?.domain ?? null} name={brand?.short ?? card.name} className="h-11 w-11" />}
             <div className="min-w-0 flex-1 pt-0.5">
               <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-card-face-foreground/70">{cat.label}</div>
               <h2 className="mt-2 break-words font-display text-[1.8rem] font-medium leading-tight tracking-tight">{card.name}</h2>
@@ -91,31 +99,20 @@ function CardDetail() {
         <div className="mt-3 text-center font-mono text-[12px] tracking-[0.22em] text-muted-foreground">{card.barcode_value}</div>
       </div>
 
-      {(card.image_url || card.back_image_url) && (
+      {card.back_image_url && (
         <div className="mt-6">
-          <div className="mb-2 px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Physical card</div>
-          <div className={`grid gap-2.5 ${card.image_url && card.back_image_url ? "grid-cols-2" : "grid-cols-1"}`}>
-            {card.image_url && (
-              <figure className="overflow-hidden rounded-2xl border border-hairline bg-black/5">
-                <img src={card.image_url} alt={`${card.name} front`} className="aspect-[1.586/1] w-full object-cover" />
-                <figcaption className="px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Front</figcaption>
-              </figure>
-            )}
-            {card.back_image_url && (
-              <figure className="overflow-hidden rounded-2xl border border-hairline bg-black/5">
-                <img src={card.back_image_url} alt={`${card.name} back`} className="aspect-[1.586/1] w-full object-cover" />
-                <figcaption className="px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Back</figcaption>
-              </figure>
-            )}
-          </div>
+          <div className="mb-2 px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Back of card</div>
+          <figure className="overflow-hidden rounded-2xl border border-hairline bg-black/5">
+            <img src={card.back_image_url} alt={`${card.name} back`} className="aspect-[1.586/1] w-full object-cover" />
+          </figure>
         </div>
       )}
 
       <div className="mt-5 grid grid-cols-2 gap-2">
-        <button onClick={() => setBright((b) => !b)} className="flex items-center justify-center gap-2 rounded-xl surface py-3 text-[13px] font-semibold tap">
+        <button onClick={() => setBright((b) => !b)} className="flex items-center justify-center gap-2 rounded-full surface py-3 text-[13px] font-semibold tap">
           <Sun className="h-4 w-4" strokeWidth={1.75} /> {bright ? "Normal" : "Brighten"}
         </button>
-        <button onClick={() => setFull(true)} className="flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-[13px] font-semibold text-primary-foreground tap">
+        <button onClick={() => setFull(true)} className="flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-[13px] font-semibold text-primary-foreground tap">
           <Maximize2 className="h-4 w-4" strokeWidth={1.75} /> Fullscreen
         </button>
       </div>

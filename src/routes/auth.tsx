@@ -38,6 +38,14 @@ function AuthPage() {
     if (!authLoading && user) navigate({ to: "/dashboard", replace: true });
   }, [authLoading, user, navigate]);
 
+  if (authLoading || user) {
+    return (
+      <div className="grid min-h-dvh place-items-center bg-background" aria-label="Opening your wallet">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -70,7 +78,7 @@ function AuthPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-7 pt-[max(env(safe-area-inset-top),1.25rem)] pb-[max(env(safe-area-inset-bottom),1.5rem)]">
-      <Link to="/" className="inline-flex w-fit items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground">
+      <Link to="/" className="inline-flex w-fit items-center gap-1.5 rounded-full text-[13px] text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
@@ -107,7 +115,7 @@ function AuthPage() {
 
         <button
           type="submit" disabled={loading}
-          className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 text-[15px] font-semibold text-primary-foreground tap disabled:opacity-60"
+          className="mt-3 flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-[15px] font-semibold text-primary-foreground tap disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSignup ? "Create account" : "Sign in"}

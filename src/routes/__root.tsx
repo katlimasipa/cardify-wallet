@@ -42,10 +42,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "CardVault — Loyalty Card Wallet" },
       { name: "description", content: "Securely store, scan and access all your loyalty and rewards cards in one premium wallet." },
-      { name: "theme-color", content: "#f3f0e7" },
+      { name: "theme-color", content: "#f5f5f7" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "CardVault" },
@@ -59,9 +59,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/icons/icon-512.png" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Onest:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" },
     ],
   }),
   shellComponent: RootShell,

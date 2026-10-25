@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { BrandLockup } from "@/components/BrandLockup";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,6 +26,14 @@ function Welcome() {
     if (!loading && user) navigate({ to: "/dashboard", replace: true });
   }, [loading, user, navigate]);
 
+  if (loading || user) {
+    return (
+      <div className="grid min-h-dvh place-items-center bg-background" aria-label="Opening your wallet">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="welcome-grain mx-auto flex min-h-dvh w-full max-w-[480px] flex-col px-6 pt-[max(env(safe-area-inset-top),2rem)] pb-[max(env(safe-area-inset-bottom),1.5rem)] sm:px-8">
       <BrandLockup />
@@ -42,14 +51,14 @@ function Welcome() {
           <Link
             to="/auth"
             search={{ mode: "signup" }}
-          className="rounded-xl bg-primary px-6 py-4 text-center text-[15px] font-semibold text-primary-foreground tap"
+          className="rounded-full bg-primary px-6 py-4 text-center text-[15px] font-semibold text-primary-foreground tap"
           >
             Create your vault
           </Link>
           <Link
             to="/auth"
             search={{ mode: "signin" }}
-          className="rounded-xl surface px-6 py-4 text-center text-[15px] font-semibold tap"
+          className="rounded-full surface px-6 py-4 text-center text-[15px] font-semibold tap"
           >
             Sign in
           </Link>

@@ -3,6 +3,7 @@ import type { Card } from "@/lib/cards";
 import { getCategory } from "@/lib/categories";
 import { matchBrand } from "@/lib/brands";
 import { BrandLogo } from "@/components/BrandLogo";
+import { BrandCardArtwork } from "@/components/BrandCardArtwork";
 import { getCardFace } from "@/lib/card-face";
 import { Star } from "lucide-react";
 
@@ -15,8 +16,8 @@ export function CardTile({
   stacked?: boolean;
   stackIndex?: number;
 }) {
-  const cat = getCategory(card.category);
   const brand = matchBrand(card.name);
+  const cat = getCategory(brand?.category ?? card.category);
   const face = getCardFace(card);
 
   return (
@@ -27,12 +28,18 @@ export function CardTile({
       style={stacked ? { marginTop: stackIndex === 0 ? 0 : "-5rem", zIndex: stackIndex + 1 } : undefined}
     >
       <article
-        className="membership-card relative flex aspect-[2.05/1] min-h-[148px] w-full overflow-hidden rounded-[18px] p-[18px] text-card-face-foreground card-shadow"
-        style={{ backgroundColor: face.background, "--card-face-foreground": face.foreground } as React.CSSProperties}
+        className="membership-card relative flex aspect-[1.586/1] min-h-[180px] w-full overflow-hidden rounded-[20px] p-5 text-card-face-foreground card-shadow"
+        style={{ backgroundColor: face.background, "--card-face-foreground": card.image_url ? "#ffffff" : face.foreground } as React.CSSProperties}
       >
-        <div className="relative flex flex-1 flex-col justify-between min-w-0">
+        {card.image_url ? (
+          <>
+            <img src={card.image_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/5 to-black/70" />
+          </>
+        ) : <BrandCardArtwork face={face.design} />}
+        <div className="relative z-10 flex flex-1 flex-col justify-between min-w-0">
           <div className="flex min-w-0 items-center gap-3.5">
-            <BrandLogo domain={brand?.domain ?? null} name={card.name} className="h-10 w-10" />
+            {!card.image_url && <BrandLogo domain={brand?.domain ?? null} name={brand?.short ?? card.name} className="h-10 w-10" />}
             <div className="min-w-0">
               <div className="text-[9px] font-semibold uppercase tracking-[0.15em] text-card-face-foreground/70">{cat.label}</div>
               <h3 className="mt-0.5 truncate font-display text-[1.25rem] font-medium leading-tight">{card.name}</h3>

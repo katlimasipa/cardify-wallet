@@ -3,18 +3,23 @@ import { useState } from "react";
 const TOKEN = import.meta.env.VITE_LOVABLE_CONNECTOR_LOGO_DEV_API_KEY ?? "";
 
 export function logoUrl(domain: string, size = 128) {
-  return `https://img.logo.dev/${domain}?token=${TOKEN}&size=${size}&format=png&fallback=monogram`;
+  const query = new URLSearchParams({ token: TOKEN, size: String(size), format: "png", fallback: "404" });
+  return `https://img.logo.dev/${domain}?${query.toString()}`;
 }
 
 function initialsOf(name: string) {
   const words = name.replace(/[^a-zA-Z0-9\s']/g, " ").split(/\s+/).filter(Boolean);
-  const letters = words.slice(0, 2).map((w) => w[0]).join("");
+  const letters = words.length === 1 && words[0].length <= 4
+    ? words[0]
+    : words.length === 1
+      ? words[0].slice(0, 2)
+      : words.slice(0, 2).map((w) => w[0]).join("");
   return (letters || "C").toUpperCase();
 }
 
 /**
- * Real brand logo from Logo.dev inside a white chip, so any logo stays
- * legible on dark or colored card faces. Falls back to a monogram.
+ * Official brand logo from Logo.dev. Missing logos use a local text mark so
+ * Logo.dev's generated monogram can never be mistaken for a brand logo.
  */
 export function BrandLogo({
   domain,
@@ -25,9 +30,17 @@ export function BrandLogo({
   name: string;
   className?: string;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [failedDomain, setFailedDomain] = useState<string | null>(null);
 
-  if (!domain || failed) {
+  if (domain === "plusmore.co.za") {
+    return (
+      <div className={`grid shrink-0 place-items-center rounded-full bg-white ${className}`} aria-hidden="true">
+        <span className="whitespace-nowrap font-sans text-[9px] font-extrabold tracking-[-0.08em] text-[#171717]">+more</span>
+      </div>
+    );
+  }
+
+  if (!domain || failedDomain === domain) {
     return (
       <div
         className={`grid shrink-0 place-items-center rounded-full bg-white/95 ${className}`}
@@ -46,7 +59,7 @@ export function BrandLogo({
         src={logoUrl(domain)}
         alt=""
         loading="lazy"
-        onError={() => setFailed(true)}
+        onError={() => setFailedDomain(domain)}
         className="h-full w-full object-contain p-[18%]"
       />
     </div>

@@ -40,14 +40,12 @@ function AddCard() {
     const brand = matchBrand(value);
     if (brand) {
       setCategory(brand.category);
-      setColor(brand.color);
     }
   }
 
   function selectBrand(brand: (typeof POPULAR_BRANDS)[number]) {
     setName(brand.name);
     setCategory(brand.category);
-    setColor(brand.color);
   }
 
   const mut = useMutation({
@@ -89,7 +87,7 @@ function AddCard() {
   return (
     <div className="mx-auto min-h-dvh w-full max-w-[480px] px-6 pt-[max(env(safe-area-inset-top),1.25rem)] pb-[max(env(safe-area-inset-bottom),2.5rem)]">
       <div className="flex items-center justify-between">
-        <button onClick={() => navigate({ to: "/cards" })} aria-label="Back to cards" className="grid h-10 w-10 place-items-center rounded-xl surface tap">
+        <button onClick={() => navigate({ to: "/cards" })} aria-label="Back to cards" className="grid h-10 w-10 place-items-center rounded-full surface tap">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <span className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">New card</span>
@@ -132,10 +130,10 @@ function AddCard() {
           <div className="-mt-3 flex items-center gap-3 rounded-xl surface px-3 py-2.5" aria-live="polite">
             <BrandLogo domain={matchedBrand.domain} name={matchedBrand.short} className="h-9 w-9" />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[12px] font-medium">{matchedBrand.short} recognized</div>
-              <div className="mt-0.5 text-[10px] text-muted-foreground">{getCategory(matchedBrand.category).label} category and color applied</div>
+              <div className="truncate text-[12px] font-medium">{matchedBrand.short} card design</div>
+              <div className="mt-0.5 text-[10px] text-muted-foreground">{getCategory(matchedBrand.category).label} category and brand styling selected</div>
             </div>
-            <span className="h-5 w-5 shrink-0 rounded-full ring-1 ring-hairline" style={{ backgroundColor: matchedBrand.color }} aria-label="Matched card color" />
+            <span className="text-[10px] font-medium text-primary">Matched</span>
           </div>
         )}
 
@@ -189,17 +187,19 @@ function AddCard() {
           <span className="mt-1.5 px-1 text-[11px] text-muted-foreground">Keep a digital copy of the actual card, just like in your wallet.</span>
         </Field>
 
-        <Field label="Card color">
-          <div className="flex flex-wrap gap-2">
-            {COLORS.map((c) => (
-              <button key={c} type="button" onClick={() => setColor(c)}
-                aria-label={`Color ${c}`}
-                aria-pressed={color === c}
-                className={`h-9 w-9 rounded-full ring-offset-2 ring-offset-background transition ${color === c ? "ring-2 ring-primary" : ""}`}
-                style={{ background: c }} />
-            ))}
-          </div>
-        </Field>
+        {!matchedBrand && (
+          <Field label="Card color">
+            <div className="flex flex-wrap gap-2">
+              {COLORS.map((c) => (
+                <button key={c} type="button" onClick={() => setColor(c)}
+                  aria-label={`Color ${c}`}
+                  aria-pressed={color === c}
+                  className={`h-9 w-9 rounded-full ring-offset-2 ring-offset-background transition ${color === c ? "ring-2 ring-primary" : ""}`}
+                  style={{ background: c }} />
+              ))}
+            </div>
+          </Field>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="Expires">
@@ -211,7 +211,7 @@ function AddCard() {
         </div>
 
         <button type="submit" disabled={mut.isPending}
-          className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 text-[15px] font-semibold text-primary-foreground tap disabled:opacity-70">
+          className="mt-3 flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-[15px] font-semibold text-primary-foreground tap disabled:opacity-70">
           {mut.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           Save card
         </button>

@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Moon, Sun, Monitor, LogOut, Lock, Download, Bell, Trash2, ChevronRight, Fingerprint } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Moon, Sun, Monitor, LogOut, Lock, Download, Bell, Trash2, ChevronRight, Fingerprint, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { getDisplayName } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — CardVault" }] }),
@@ -15,6 +17,11 @@ function Settings() {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const savedName = getDisplayName(user);
+  const [displayName, setDisplayName] = useState(savedName);
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  useEffect(() => setDisplayName(savedName), [savedName]);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -26,6 +33,23 @@ function Settings() {
     if (pw.length < 8) return toast.error("Too short");
     const { error } = await supabase.auth.updateUser({ password: pw });
     if (error) toast.error(error.message); else toast.success("Password updated");
+  }
+  async function saveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (displayName.trim().length > 40) return toast.error("Use 40 characters or fewer");
+    setSavingProfile(true);
+    const name = displayName.trim();
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { display_name: name || null, full_name: name || null, name: name || null },
+      });
+      if (error) toast.error(error.message);
+      else toast.success("Profile updated");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Profile update failed");
+    } finally {
+      setSavingProfile(false);
+    }
   }
   async function enableBiometric() {
     if (!window.PublicKeyCredential) return toast.error("Not supported");
@@ -43,9 +67,31 @@ function Settings() {
 
   return (
     <AppShell title="Settings">
-      <section className="mt-1 rounded-xl surface px-4 py-4">
-        <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Account</div>
-        <div className="mt-1.5 truncate text-[14px] font-medium">{user?.email}</div>
+      <section className="mt-1 rounded-[24px] surface px-5 py-5">
+        <div className="text-[1.2rem] font-semibold tracking-[-0.035em]">Profile</div>
+        <p className="mt-1 text-[13px] text-muted-foreground">Choose the name shown in your wallet.</p>
+        <form onSubmit={saveProfile} className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+          <label className="grid gap-2">
+            <span className="field-label px-1">Display name</span>
+            <input
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              maxLength={40}
+              autoComplete="name"
+              placeholder="Your name"
+              className="cv-input"
+            />
+          </label>
+          <button type="submit" disabled={savingProfile}
+            className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-[14px] font-semibold text-primary-foreground tap disabled:opacity-60">
+            {savingProfile && <Loader2 className="h-4 w-4 animate-spin" />}
+            Save name
+          </button>
+        </form>
+        <div className="mt-5 border-t border-hairline pt-4">
+          <div className="field-label px-1">Signed in as</div>
+          <div className="mt-1 truncate text-[13px] text-muted-foreground">{user?.email}</div>
+        </div>
       </section>
 
       <Group title="Appearance">

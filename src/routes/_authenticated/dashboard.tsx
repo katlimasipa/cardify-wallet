@@ -4,6 +4,7 @@ import { listCards } from "@/lib/cards";
 import { AppShell } from "@/components/AppShell";
 import { CardTile } from "@/components/CardTile";
 import { useAuth } from "@/lib/auth";
+import { getDisplayName } from "@/lib/profile";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — CardVault" }] }),
@@ -28,13 +29,13 @@ function Dashboard() {
     if (h < 18) return "Afternoon";
     return "Evening";
   })();
-  const name = (user?.user_metadata?.full_name as string)?.split(" ")[0] || user?.email?.split("@")[0] || "there";
+  const name = getDisplayName(user);
 
   return (
     <AppShell>
       <div className="pt-[max(env(safe-area-inset-top),1rem)]">
         <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">{greeting}</p>
-        <h1 className="mt-2 font-display text-[2.65rem] font-medium leading-[0.98] tracking-[-0.04em]">{name}</h1>
+        <h1 className="mt-2 font-display text-[2.65rem] font-semibold leading-[0.98] tracking-[-0.05em]">{name || "Your cards"}</h1>
       </div>
 
       <dl className="mt-7 grid grid-cols-3 gap-3 border-y border-hairline py-5">
@@ -53,13 +54,13 @@ function Dashboard() {
         <>
           {recent.length > 0 && (
             <Section title="Recent">
-              <div className="grid gap-3">{recent.map((c) => <CardTile key={c.id} card={c} />)}</div>
+              <div className="grid gap-4 sm:grid-cols-2">{recent.map((c) => <CardTile key={c.id} card={c} />)}</div>
             </Section>
           )}
 
           {favorites.length > 0 && (
             <Section title="Saved" link={{ to: "/favorites", label: "See all" }}>
-              <div className="grid gap-3">{favorites.map((c) => <CardTile key={c.id} card={c} />)}</div>
+              <div className="grid gap-4 sm:grid-cols-2">{favorites.map((c) => <CardTile key={c.id} card={c} />)}</div>
             </Section>
           )}
 
@@ -98,8 +99,8 @@ function Section({ title, link, children }: { title: string; link?: { to: string
   return (
     <section className="mt-8">
       <div className="mb-3 flex items-baseline justify-between">
-      <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em]">{title}</h2>
-        {link && <Link to={link.to as any} className="text-[12px] text-muted-foreground hover:text-foreground">{link.label}</Link>}
+      <h2 className="font-sans text-[1.25rem] font-semibold tracking-[-0.035em]">{title}</h2>
+        {link && <Link to={link.to as any} className="text-[13px] font-medium text-primary hover:opacity-75">{link.label}</Link>}
       </div>
       {children}
     </section>

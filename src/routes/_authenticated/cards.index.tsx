@@ -6,6 +6,7 @@ import { listCards } from "@/lib/cards";
 import { AppShell } from "@/components/AppShell";
 import { CardTile } from "@/components/CardTile";
 import { CATEGORIES } from "@/lib/categories";
+import { matchBrand } from "@/lib/brands";
 
 export const Route = createFileRoute("/_authenticated/cards/")({
   head: () => ({ meta: [{ title: "My Cards — CardVault" }] }),
@@ -25,7 +26,7 @@ function MyCards() {
 
   const filtered = useMemo(() => {
     return cards.filter((c) => {
-      if (cat !== "all" && c.category !== cat) return false;
+      if (cat !== "all" && (matchBrand(c.name)?.category ?? c.category) !== cat) return false;
       if (!q) return true;
       const s = q.toLowerCase();
       return c.name.toLowerCase().includes(s) || (c.membership_number ?? "").toLowerCase().includes(s);
@@ -79,9 +80,9 @@ function MyCards() {
         ))}
       </div>
 
-      <div className="mt-5">
+      <div className="mt-6">
         {isLoading ? (
-          <div className="grid gap-3">{[0,1,2].map(i => <div key={i} className="h-[148px] animate-pulse rounded-[18px] surface" />)}</div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{[0,1,2].map(i => <div key={i} className="aspect-[1.586/1] animate-pulse rounded-[20px] surface" />)}</div>
         ) : filtered.length === 0 ? (
           <div className="surface rounded-[18px] px-6 py-12 text-center">
             <p className="text-[13px] text-muted-foreground">{cards.length === 0 ? "No cards yet." : "No cards match."}</p>
@@ -90,9 +91,9 @@ function MyCards() {
             )}
           </div>
         ) : (
-          <div className="flex flex-col">
-            {filtered.map((c, index) => (
-              <CardTile key={c.id} card={c} stacked stackIndex={index} />
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((c) => (
+              <CardTile key={c.id} card={c} />
             ))}
           </div>
         )}
@@ -105,7 +106,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 rounded-lg px-4 py-2 text-[12px] font-semibold tap ${
+      className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-semibold tap ${
         active ? "bg-primary text-primary-foreground" : "border border-hairline bg-surface text-muted-foreground"
       }`}
     >
