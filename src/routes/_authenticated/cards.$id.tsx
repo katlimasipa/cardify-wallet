@@ -76,12 +76,15 @@ function CardDetail() {
         <div className="relative overflow-hidden rounded-[26px] p-6 text-white card-shadow" style={{ background: bg }}>
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/15" />
           <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-white/[0.07] blur-2xl" />
-          <div className="relative">
-            <div className="text-[10px] uppercase tracking-[0.28em] text-white/55">{cat.label}</div>
-            <h2 className="mt-3 font-display text-[1.6rem] font-semibold leading-tight tracking-tight">{card.name}</h2>
-            {card.membership_number && (
-              <div className="mt-2 font-mono text-[13px] tracking-[0.22em] text-white/85">{card.membership_number}</div>
-            )}
+          <div className="relative flex items-start gap-3">
+            <BrandLogo domain={matchBrand(card.name)?.domain ?? null} name={card.name} className="h-11 w-11" />
+            <div className="min-w-0 flex-1 pt-0.5">
+              <div className="text-[10px] uppercase tracking-[0.28em] text-white/55">{cat.label}</div>
+              <h2 className="mt-2 break-words font-display text-[1.5rem] font-semibold leading-tight tracking-tight">{card.name}</h2>
+              {card.membership_number && (
+                <div className="mt-2 break-all font-mono text-[13px] tracking-[0.16em] text-white/85">{card.membership_number}</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

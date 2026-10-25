@@ -82,6 +82,22 @@ export const BRAND_PRESETS: BrandPreset[] = [
   { name: "Varsity Vibe", short: "Varsity Vibe", domain: "varsityvibe.co.za", category: "memberships", color: "#5b2bd6", keywords: ["varsity"] },
 ];
 
+const POPULAR_BRAND_NAMES = [
+  "Pick n Pay Smart Shopper",
+  "Checkers Xtra Savings",
+  "Woolworths WRewards",
+  "Clicks ClubCard",
+  "Dis-Chem Benefit",
+  "Shell V+ Rewards",
+  "SPAR Rewards",
+  "FNB eBucks",
+];
+
+export const POPULAR_BRANDS = POPULAR_BRAND_NAMES.flatMap((name) => {
+  const brand = BRAND_PRESETS.find((preset) => preset.name === name);
+  return brand ? [brand] : [];
+});
+
 // More specific keywords first so e.g. "Dis-Chem Baby" wins over "Dis-Chem".
 const SORTED = [...BRAND_PRESETS].sort(
   (a, b) => Math.min(...b.keywords.map((k) => k.length)) - Math.min(...a.keywords.map((k) => k.length))

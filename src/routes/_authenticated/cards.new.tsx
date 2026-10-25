@@ -5,9 +5,11 @@ import { toast } from "sonner";
 import { ArrowLeft, Camera, Loader2, ScanLine, Upload, X } from "lucide-react";
 import { z } from "zod";
 import { createCard } from "@/lib/cards";
-import { CATEGORIES, BARCODE_FORMATS, type BarcodeFormat } from "@/lib/categories";
+import { CATEGORIES, BARCODE_FORMATS, getCategory, type BarcodeFormat } from "@/lib/categories";
 import { BarcodeView } from "@/components/BarcodeView";
+import { BrandLogo } from "@/components/BrandLogo";
 import { compressImage } from "@/lib/image";
+import { matchBrand, POPULAR_BRANDS } from "@/lib/brands";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { BarcodeFormat as ZXFormat, DecodeHintType } from "@zxing/library";
 
@@ -31,6 +33,22 @@ function AddCard() {
   const [expiry, setExpiry] = useState("");
   const [frontImg, setFrontImg] = useState<string | null>(null);
   const [backImg, setBackImg] = useState<string | null>(null);
+  const matchedBrand = matchBrand(name);
+
+  function updateName(value: string) {
+    setName(value);
+    const brand = matchBrand(value);
+    if (brand) {
+      setCategory(brand.category);
+      setColor(brand.color);
+    }
+  }
+
+  function selectBrand(brand: (typeof POPULAR_BRANDS)[number]) {
+    setName(brand.name);
+    setCategory(brand.category);
+    setColor(brand.color);
+  }
 
   const mut = useMutation({
     mutationFn: createCard,
@@ -84,9 +102,42 @@ function AddCard() {
       <Scanner onResult={(val, fmt) => { setBarcode(val); if (fmt) setFormat(fmt); toast.success("Barcode captured"); }} />
 
       <form onSubmit={submit} className="mt-7 grid gap-5">
+        <section aria-labelledby="popular-cards-label">
+          <h2 id="popular-cards-label" className="mb-2 px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Popular cards</h2>
+          <div className="grid grid-cols-4 gap-2">
+            {POPULAR_BRANDS.map((brand) => {
+              const selected = matchedBrand?.name === brand.name;
+              return (
+                <button
+                  key={brand.name}
+                  type="button"
+                  onClick={() => selectBrand(brand)}
+                  aria-label={`Use ${brand.name}`}
+                  aria-pressed={selected}
+                  className={`flex min-w-0 flex-col items-center gap-1.5 rounded-2xl px-1 py-2 text-center tap ${selected ? "ring-1 ring-foreground surface" : "surface"}`}
+                >
+                  <BrandLogo domain={brand.domain} name={brand.short} className="h-8 w-8" />
+                  <span className="w-full truncate text-[9px] font-medium">{brand.short}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
         <Field label="Card name">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Pick n Pay Smart Shopper" className="cv-input" required />
+          <input value={name} onChange={(e) => updateName(e.target.value)} placeholder="Pick n Pay Smart Shopper" className="cv-input" required />
         </Field>
+
+        {matchedBrand && (
+          <div className="-mt-3 flex items-center gap-3 rounded-2xl surface px-3 py-2.5" aria-live="polite">
+            <BrandLogo domain={matchedBrand.domain} name={matchedBrand.short} className="h-9 w-9" />
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[12px] font-medium">{matchedBrand.short} recognized</div>
+              <div className="mt-0.5 text-[10px] text-muted-foreground">{getCategory(matchedBrand.category).label} · brand colors applied</div>
+            </div>
+            <span className="h-5 w-5 shrink-0 rounded-full ring-1 ring-hairline" style={{ backgroundColor: matchedBrand.color }} aria-label="Matched card color" />
+          </div>
+        )}
 
         <Field label="Category">
           <div className="grid grid-cols-4 gap-1.5">
