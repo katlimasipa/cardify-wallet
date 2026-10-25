@@ -23,7 +23,7 @@ function Favorites() {
           <p className="mx-auto mt-2 max-w-[18rem] text-[13px] text-muted-foreground">
             Tap the star on any card to keep it handy here.
           </p>
-          <Link to="/cards" className="mt-6 inline-flex rounded-full bg-foreground px-5 py-2.5 text-[13px] font-medium text-background tap">
+          <Link to="/cards" className="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-[13px] font-semibold text-primary-foreground tap">
             Browse cards
           </Link>
         </div>

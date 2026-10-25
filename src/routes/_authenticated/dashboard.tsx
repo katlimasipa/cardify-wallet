@@ -34,7 +34,7 @@ function Dashboard() {
     <AppShell>
       <div className="pt-[max(env(safe-area-inset-top),1rem)]">
         <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">{greeting}</p>
-        <h1 className="mt-2 font-display text-[2.25rem] font-semibold leading-[1] tracking-[-0.03em]">{name}.</h1>
+        <h1 className="mt-2 font-display text-[2.65rem] font-medium leading-[0.98] tracking-[-0.04em]">{name}</h1>
       </div>
 
       <dl className="mt-7 grid grid-cols-3 gap-3 border-y border-hairline py-5">
@@ -88,7 +88,7 @@ function Dashboard() {
 function Stat({ label, value, divide }: { label: string; value: number; divide?: boolean }) {
   return (
     <div className={divide ? "border-l border-hairline pl-3" : ""}>
-      <dd className="font-display text-[1.75rem] font-semibold leading-none tabular-nums">{value}</dd>
+      <dd className="font-display text-[2rem] font-medium leading-none tabular-nums">{value}</dd>
       <dt className="mt-1.5 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{label}</dt>
     </div>
   );
@@ -98,7 +98,7 @@ function Section({ title, link, children }: { title: string; link?: { to: string
   return (
     <section className="mt-8">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="font-display text-[15px] font-semibold uppercase tracking-[0.18em]">{title}</h2>
+      <h2 className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em]">{title}</h2>
         {link && <Link to={link.to as any} className="text-[12px] text-muted-foreground hover:text-foreground">{link.label}</Link>}
       </div>
       {children}
@@ -108,12 +108,12 @@ function Section({ title, link, children }: { title: string; link?: { to: string
 
 function EmptyState() {
   return (
-    <div className="mt-12 surface rounded-[22px] px-6 py-12 text-center">
-      <h3 className="font-display text-[1.25rem] font-semibold">Your vault is empty</h3>
+    <div className="mt-12 surface rounded-[18px] px-6 py-12 text-center">
+      <h3 className="font-display text-[1.7rem] font-medium">Your vault is empty</h3>
       <p className="mx-auto mt-2 max-w-[18rem] text-[13px] text-muted-foreground">
         Add your first loyalty card and it will appear here for instant scanning.
       </p>
-      <Link to="/cards/new" className="mt-6 inline-flex rounded-full bg-foreground px-5 py-2.5 text-[13px] font-medium text-background tap">
+      <Link to="/cards/new" className="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-[13px] font-semibold text-primary-foreground tap">
         Add a card
       </Link>
     </div>

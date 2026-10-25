@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/cards/new")({
   component: AddCard,
 });
 
-const COLORS = ["#1a1a1a", "#2f5d49", "#1f4a63", "#732c1f", "#4a3766", "#73522a", "#2d3654", "#0a0a0a"];
+const COLORS = ["#514664", "#244c3d", "#28576a", "#704333", "#3b4b62", "#785a31", "#983b36", "#101a14"];
 
 function AddCard() {
   const navigate = useNavigate();
@@ -89,22 +89,22 @@ function AddCard() {
   return (
     <div className="mx-auto min-h-dvh w-full max-w-[480px] px-6 pt-[max(env(safe-area-inset-top),1.25rem)] pb-[max(env(safe-area-inset-bottom),2.5rem)]">
       <div className="flex items-center justify-between">
-        <button onClick={() => navigate({ to: "/cards" })} className="grid h-10 w-10 place-items-center rounded-full surface tap">
+        <button onClick={() => navigate({ to: "/cards" })} aria-label="Back to cards" className="grid h-10 w-10 place-items-center rounded-xl surface tap">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <span className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">New card</span>
         <div className="w-10" />
       </div>
 
-      <h1 className="mt-8 font-display text-[2.25rem] font-semibold leading-none tracking-[-0.03em]">Add a card</h1>
+      <h1 className="mt-8 font-display text-[2.8rem] font-medium leading-[0.95] tracking-[-0.04em]">Add a card</h1>
       <p className="mt-2 text-[13px] text-muted-foreground">Scan, upload or enter manually.</p>
 
       <Scanner onResult={(val, fmt) => { setBarcode(val); if (fmt) setFormat(fmt); toast.success("Barcode captured"); }} />
 
       <form onSubmit={submit} className="mt-7 grid gap-5">
         <section aria-labelledby="popular-cards-label">
-          <h2 id="popular-cards-label" className="mb-2 px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Popular cards</h2>
-          <div className="grid grid-cols-4 gap-2">
+          <h2 id="popular-cards-label" className="field-label mb-2 px-1">Popular cards</h2>
+          <div className="grid grid-cols-3 gap-2">
             {POPULAR_BRANDS.map((brand) => {
               const selected = matchedBrand?.name === brand.name;
               return (
@@ -114,10 +114,10 @@ function AddCard() {
                   onClick={() => selectBrand(brand)}
                   aria-label={`Use ${brand.name}`}
                   aria-pressed={selected}
-                  className={`flex min-w-0 flex-col items-center gap-1.5 rounded-2xl px-1 py-2 text-center tap ${selected ? "ring-1 ring-foreground surface" : "surface"}`}
+                  className={`flex min-h-[64px] min-w-0 items-center gap-2 rounded-xl px-2 text-left tap ${selected ? "border border-primary bg-primary/5" : "surface"}`}
                 >
                   <BrandLogo domain={brand.domain} name={brand.short} className="h-8 w-8" />
-                  <span className="w-full truncate text-[9px] font-medium">{brand.short}</span>
+                  <span className="min-w-0 truncate text-[11px] font-semibold">{brand.short}</span>
                 </button>
               );
             })}
@@ -129,11 +129,11 @@ function AddCard() {
         </Field>
 
         {matchedBrand && (
-          <div className="-mt-3 flex items-center gap-3 rounded-2xl surface px-3 py-2.5" aria-live="polite">
+          <div className="-mt-3 flex items-center gap-3 rounded-xl surface px-3 py-2.5" aria-live="polite">
             <BrandLogo domain={matchedBrand.domain} name={matchedBrand.short} className="h-9 w-9" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[12px] font-medium">{matchedBrand.short} recognized</div>
-              <div className="mt-0.5 text-[10px] text-muted-foreground">{getCategory(matchedBrand.category).label} · brand colors applied</div>
+              <div className="mt-0.5 text-[10px] text-muted-foreground">{getCategory(matchedBrand.category).label} category and color applied</div>
             </div>
             <span className="h-5 w-5 shrink-0 rounded-full ring-1 ring-hairline" style={{ backgroundColor: matchedBrand.color }} aria-label="Matched card color" />
           </div>
@@ -143,9 +143,10 @@ function AddCard() {
           <div className="grid grid-cols-4 gap-1.5">
             {CATEGORIES.map((c) => (
               <button
-                key={c.value} type="button" onClick={() => setCategory(c.value)}
-                className={`flex flex-col items-center gap-1 rounded-2xl px-1.5 py-2.5 text-[10px] font-medium tap ${
-                  category === c.value ? "bg-foreground text-background" : "surface text-muted-foreground"
+                key={c.value} type="button" onClick={() => { setCategory(c.value); setColor(c.color); }}
+                aria-pressed={category === c.value}
+                className={`flex flex-col items-center gap-1 rounded-xl px-1.5 py-2.5 text-[10px] font-semibold tap ${
+                  category === c.value ? "bg-primary text-primary-foreground" : "surface text-muted-foreground"
                 }`}
               >
                 <c.icon className="h-3.5 w-3.5" strokeWidth={1.75} /> {c.label}
@@ -166,8 +167,8 @@ function AddCard() {
           <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
             {BARCODE_FORMATS.map((f) => (
               <button key={f} type="button" onClick={() => setFormat(f)}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-medium tap ${
-                  format === f ? "bg-foreground text-background" : "surface text-muted-foreground"
+                className={`shrink-0 rounded-lg px-3.5 py-2 text-[11px] font-semibold tap ${
+                  format === f ? "bg-primary text-primary-foreground" : "surface text-muted-foreground"
                 }`}>{f}</button>
             ))}
           </div>
@@ -193,7 +194,8 @@ function AddCard() {
             {COLORS.map((c) => (
               <button key={c} type="button" onClick={() => setColor(c)}
                 aria-label={`Color ${c}`}
-                className={`h-9 w-9 rounded-full ring-offset-2 ring-offset-background transition ${color === c ? "ring-2 ring-foreground" : ""}`}
+                aria-pressed={color === c}
+                className={`h-9 w-9 rounded-full ring-offset-2 ring-offset-background transition ${color === c ? "ring-2 ring-primary" : ""}`}
                 style={{ background: c }} />
             ))}
           </div>
@@ -209,17 +211,12 @@ function AddCard() {
         </div>
 
         <button type="submit" disabled={mut.isPending}
-          className="mt-3 flex items-center justify-center gap-2 rounded-full bg-foreground px-5 py-4 text-[15px] font-medium text-background tap disabled:opacity-70">
+          className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 text-[15px] font-semibold text-primary-foreground tap disabled:opacity-70">
           {mut.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
           Save card
         </button>
       </form>
 
-      <style>{`
-        .cv-input { width:100%; padding:.95rem 1.125rem; border-radius:14px; background:var(--color-surface); border:1px solid var(--color-hairline); outline:none; font-size:.92rem; color:var(--color-foreground); }
-        .cv-input::placeholder { color: var(--color-muted-foreground); }
-        .cv-input:focus { border-color: var(--color-foreground); }
-      `}</style>
     </div>
   );
 }
@@ -227,7 +224,7 @@ function AddCard() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="grid gap-2">
-      <span className="px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{label}</span>
+      <span className="field-label px-1">{label}</span>
       {children}
     </label>
   );
@@ -260,12 +257,12 @@ function ImagePicker({ label, value, onChange }: { label: string; value: string 
         onChange={(e) => { const f = e.target.files?.[0]; if (f) handle(f); e.target.value = ""; }}
       />
       {value ? (
-        <div className="group relative aspect-[1.586/1] overflow-hidden rounded-2xl border border-hairline">
+        <div className="group relative aspect-[1.586/1] overflow-hidden rounded-xl border border-hairline">
           <img src={value} alt={label} className="h-full w-full object-cover" />
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white"
+            className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-lg bg-black/60 text-white"
             aria-label={`Remove ${label}`}
           >
             <X className="h-3.5 w-3.5" />
@@ -276,7 +273,7 @@ function ImagePicker({ label, value, onChange }: { label: string; value: string 
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex aspect-[1.586/1] w-full flex-col items-center justify-center gap-1.5 rounded-2xl surface text-muted-foreground tap"
+          className="flex aspect-[1.586/1] w-full flex-col items-center justify-center gap-1.5 rounded-xl surface text-muted-foreground tap"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" strokeWidth={1.75} />}
           <span className="text-[11px] font-medium">{label}</span>
@@ -387,9 +384,9 @@ function Scanner({ onResult }: { onResult: (value: string, format?: BarcodeForma
   return (
     <>
       <button type="button" onClick={() => setOpen(true)}
-        className="mt-7 flex w-full items-center justify-between rounded-2xl surface px-5 py-4 text-left tap">
+        className="mt-7 flex w-full items-center justify-between rounded-xl surface px-5 py-4 text-left tap">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-foreground text-background">
+          <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary text-primary-foreground">
             <ScanLine className="h-4 w-4" strokeWidth={1.75} />
           </span>
           <div>
@@ -410,7 +407,7 @@ function Scanner({ onResult }: { onResult: (value: string, format?: BarcodeForma
                 <div className="absolute inset-x-0 h-[2px] animate-scanline bg-white/90" />
               </div>
             </div>
-            <button onClick={() => setOpen(false)} className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white/10 text-white backdrop-blur">
+            <button onClick={() => setOpen(false)} aria-label="Close scanner" className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-xl bg-white/10 text-white backdrop-blur">
               <X className="h-4 w-4" />
             </button>
             <div className="absolute inset-x-0 bottom-4 text-center text-[11px] tracking-wide text-white/75">

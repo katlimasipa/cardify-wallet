@@ -3,6 +3,7 @@ import type { Card } from "@/lib/cards";
 import { getCategory } from "@/lib/categories";
 import { matchBrand } from "@/lib/brands";
 import { BrandLogo } from "@/components/BrandLogo";
+import { getCardFace } from "@/lib/card-face";
 import { Star } from "lucide-react";
 
 export function CardTile({
@@ -16,9 +17,7 @@ export function CardTile({
 }) {
   const cat = getCategory(card.category);
   const brand = matchBrand(card.name);
-  const bg = card.color && card.color !== "#1a1a1a"
-    ? `linear-gradient(155deg, ${card.color}, color-mix(in oklab, ${card.color} 55%, #000))`
-    : cat.gradient;
+  const face = getCardFace(card);
 
   return (
     <Link
@@ -28,26 +27,23 @@ export function CardTile({
       style={stacked ? { marginTop: stackIndex === 0 ? 0 : "-5rem", zIndex: stackIndex + 1 } : undefined}
     >
       <article
-        className="membership-card relative flex aspect-[2.05/1] min-h-[148px] w-full overflow-hidden rounded-[22px] p-[18px] text-card-face-foreground card-shadow"
-        style={{ background: bg }}
+        className="membership-card relative flex aspect-[2.05/1] min-h-[148px] w-full overflow-hidden rounded-[18px] p-[18px] text-card-face-foreground card-shadow"
+        style={{ backgroundColor: face.background, "--card-face-foreground": face.foreground } as React.CSSProperties}
       >
-        <div className="card-noise pointer-events-none absolute inset-0" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-card-face-foreground/20" />
-
         <div className="relative flex flex-1 flex-col justify-between min-w-0">
           <div className="flex min-w-0 items-center gap-3.5">
             <BrandLogo domain={brand?.domain ?? null} name={card.name} className="h-10 w-10" />
             <div className="min-w-0">
-              <div className="text-[9px] font-semibold uppercase tracking-[0.16em] text-card-face-foreground/65">{cat.label}</div>
-              <h3 className="mt-0.5 truncate font-display text-[1.15rem] font-semibold leading-tight">{card.name}</h3>
+              <div className="text-[9px] font-semibold uppercase tracking-[0.15em] text-card-face-foreground/70">{cat.label}</div>
+              <h3 className="mt-0.5 truncate font-display text-[1.25rem] font-medium leading-tight">{card.name}</h3>
             </div>
           </div>
           {card.membership_number ? (
-            <div className="font-mono text-[11px] tracking-[0.16em] text-card-face-foreground/70 truncate">
+            <div className="font-mono text-[11px] tracking-[0.12em] text-card-face-foreground/80 truncate">
               {card.membership_number}
             </div>
           ) : (
-            <div className="text-[10px] uppercase tracking-[0.16em] text-card-face-foreground/45">Digital membership</div>
+            <div className="text-[10px] uppercase tracking-[0.15em] text-card-face-foreground/60">Digital membership</div>
           )}
         </div>
 

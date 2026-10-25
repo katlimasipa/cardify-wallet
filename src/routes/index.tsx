@@ -30,7 +30,7 @@ function Welcome() {
       <BrandLockup />
 
       <div className="mt-auto pt-20">
-        <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground">Your everyday cards, refined</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Your everyday cards, refined</p>
         <h1 className="mt-5 max-w-[9ch] font-display text-[3.4rem] font-semibold leading-[0.92]">
           Carry less.<br />Keep more.
         </h1>
@@ -42,14 +42,14 @@ function Welcome() {
           <Link
             to="/auth"
             search={{ mode: "signup" }}
-            className="rounded-[14px] bg-foreground px-6 py-4 text-center text-[15px] font-semibold text-background tap soft-shadow"
+          className="rounded-xl bg-primary px-6 py-4 text-center text-[15px] font-semibold text-primary-foreground tap"
           >
             Create your vault
           </Link>
           <Link
             to="/auth"
             search={{ mode: "signin" }}
-            className="rounded-[14px] hairline px-6 py-4 text-center text-[15px] font-medium tap"
+          className="rounded-xl surface px-6 py-4 text-center text-[15px] font-semibold tap"
           >
             Sign in
           </Link>

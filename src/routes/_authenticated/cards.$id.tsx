@@ -8,6 +8,7 @@ import { BarcodeView } from "@/components/BarcodeView";
 import { BrandLogo } from "@/components/BrandLogo";
 import { getCategory } from "@/lib/categories";
 import { matchBrand } from "@/lib/brands";
+import { getCardFace } from "@/lib/card-face";
 
 export const Route = createFileRoute("/_authenticated/cards/$id")({
   head: () => ({ meta: [{ title: "Card — CardVault" }] }),
@@ -49,14 +50,12 @@ function CardDetail() {
     return <div className="grid min-h-dvh place-items-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
   }
 
-  const bg = card.color && card.color !== "#1a1a1a"
-    ? `linear-gradient(155deg, ${card.color}, color-mix(in oklab, ${card.color} 55%, #000))`
-    : cat.gradient;
+  const face = getCardFace(card);
 
   return (
     <div className={`mx-auto min-h-dvh w-full max-w-[480px] px-6 pt-[max(env(safe-area-inset-top),1.25rem)] pb-[max(env(safe-area-inset-bottom),2.5rem)] ${bright ? "text-black" : ""}`}>
       <div className="flex items-center justify-between">
-        <button onClick={() => navigate({ to: "/cards" })} className="grid h-10 w-10 place-items-center rounded-full surface tap">
+        <button onClick={() => navigate({ to: "/cards" })} aria-label="Back to cards" className="grid h-10 w-10 place-items-center rounded-xl surface tap">
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div className="flex gap-2">
@@ -73,16 +72,14 @@ function CardDetail() {
       </div>
 
       <div className="mt-7">
-        <div className="relative overflow-hidden rounded-[26px] p-6 text-white card-shadow" style={{ background: bg }}>
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/15" />
-          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-white/[0.07] blur-2xl" />
+        <div className="membership-card relative overflow-hidden rounded-[20px] p-6 text-card-face-foreground card-shadow" style={{ backgroundColor: face.background, "--card-face-foreground": face.foreground } as React.CSSProperties}>
           <div className="relative flex items-start gap-3">
             <BrandLogo domain={matchBrand(card.name)?.domain ?? null} name={card.name} className="h-11 w-11" />
             <div className="min-w-0 flex-1 pt-0.5">
-              <div className="text-[10px] uppercase tracking-[0.28em] text-white/55">{cat.label}</div>
-              <h2 className="mt-2 break-words font-display text-[1.5rem] font-semibold leading-tight tracking-tight">{card.name}</h2>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-card-face-foreground/70">{cat.label}</div>
+              <h2 className="mt-2 break-words font-display text-[1.8rem] font-medium leading-tight tracking-tight">{card.name}</h2>
               {card.membership_number && (
-                <div className="mt-2 break-all font-mono text-[13px] tracking-[0.16em] text-white/85">{card.membership_number}</div>
+                <div className="mt-2 break-all font-mono text-[13px] tracking-[0.12em] text-card-face-foreground/85">{card.membership_number}</div>
               )}
             </div>
           </div>
@@ -115,10 +112,10 @@ function CardDetail() {
       )}
 
       <div className="mt-5 grid grid-cols-2 gap-2">
-        <button onClick={() => setBright((b) => !b)} className="flex items-center justify-center gap-2 rounded-full surface py-3 text-[13px] font-medium tap">
+        <button onClick={() => setBright((b) => !b)} className="flex items-center justify-center gap-2 rounded-xl surface py-3 text-[13px] font-semibold tap">
           <Sun className="h-4 w-4" strokeWidth={1.75} /> {bright ? "Normal" : "Brighten"}
         </button>
-        <button onClick={() => setFull(true)} className="flex items-center justify-center gap-2 rounded-full surface py-3 text-[13px] font-medium tap">
+        <button onClick={() => setFull(true)} className="flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-[13px] font-semibold text-primary-foreground tap">
           <Maximize2 className="h-4 w-4" strokeWidth={1.75} /> Fullscreen
         </button>
       </div>
@@ -131,8 +128,8 @@ function CardDetail() {
       )}
 
       {full && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-white p-6" onClick={() => setFull(false)}>
-          <button onClick={() => setFull(false)} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-black/5 text-black">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-background p-6" onClick={() => setFull(false)}>
+          <button onClick={() => setFull(false)} aria-label="Close fullscreen barcode" className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-xl surface text-foreground">
             <X className="h-4 w-4" />
           </button>
           <div className="w-full max-w-md">
@@ -147,7 +144,7 @@ function CardDetail() {
 }
 
 function IconButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
-  return <button onClick={onClick} className="grid h-10 w-10 place-items-center rounded-full surface tap">{children}</button>;
+  return <button onClick={onClick} className="grid h-10 w-10 place-items-center rounded-xl surface tap">{children}</button>;
 }
 function Row({ label, value }: { label: string; value: string }) {
   return (

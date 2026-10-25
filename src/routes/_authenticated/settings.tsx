@@ -43,7 +43,7 @@ function Settings() {
 
   return (
     <AppShell title="Settings">
-      <section className="mt-1 rounded-2xl surface px-4 py-4">
+      <section className="mt-1 rounded-xl surface px-4 py-4">
         <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Account</div>
         <div className="mt-1.5 truncate text-[14px] font-medium">{user?.email}</div>
       </section>
@@ -78,7 +78,7 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   return (
     <section className="mt-7">
       {title && <div className="mb-2 px-1.5 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{title}</div>}
-      <div className="overflow-hidden rounded-2xl surface">{children}</div>
+      <div className="overflow-hidden rounded-xl surface">{children}</div>
     </section>
   );
 }
@@ -103,8 +103,8 @@ function RowLink({ icon: Icon, label, to }: { icon: typeof Lock; label: string; 
 function ThemeBtn({ active, onClick, icon: Icon, label }: { active: boolean; onClick: () => void; icon: typeof Sun; label: string }) {
   return (
     <button onClick={onClick}
-      className={`flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-[11px] font-medium tap ${
-        active ? "bg-foreground text-background" : "text-muted-foreground"
+      className={`flex flex-col items-center gap-1.5 rounded-lg px-2 py-3 text-[11px] font-semibold tap ${
+        active ? "bg-primary text-primary-foreground" : "text-muted-foreground"
       }`}>
       <Icon className="h-4 w-4" strokeWidth={1.75} /> {label}
     </button>

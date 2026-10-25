@@ -107,7 +107,7 @@ function AuthPage() {
 
         <button
           type="submit" disabled={loading}
-          className="mt-3 flex items-center justify-center gap-2 rounded-[14px] bg-foreground px-5 py-4 text-[15px] font-semibold text-background tap soft-shadow disabled:opacity-60"
+          className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-4 text-[15px] font-semibold text-primary-foreground tap disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isSignup ? "Create account" : "Sign in"}
@@ -125,11 +125,6 @@ function AuthPage() {
         </Link>
       </div>
 
-      <style>{`
-        .cv-input { width:100%; padding:1rem 1.125rem; border-radius:14px; background:var(--color-surface); border:1px solid var(--color-hairline); outline:none; font-size:.95rem; color:var(--color-foreground); transition: border-color .15s ease, box-shadow .15s ease; }
-        .cv-input::placeholder { color: var(--color-muted-foreground); }
-        .cv-input:focus { border-color: var(--color-foreground); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-foreground) 8%, transparent); }
-      `}</style>
     </div>
   );
 }
@@ -137,7 +132,7 @@ function AuthPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="grid gap-2">
-      <span className="px-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">{label}</span>
+      <span className="field-label px-1">{label}</span>
       {children}
     </label>
   );

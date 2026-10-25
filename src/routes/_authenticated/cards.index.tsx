@@ -46,7 +46,7 @@ function MyCards() {
           }}
           aria-label={searchOpen ? "Close card search" : "Search cards"}
           aria-expanded={searchOpen}
-          className="grid h-10 w-10 place-items-center rounded-full surface tap"
+          className="grid h-10 w-10 place-items-center rounded-xl surface tap"
         >
           {searchOpen ? <X className="h-[18px] w-[18px]" /> : <Search className="h-[18px] w-[18px]" />}
         </button>
@@ -67,7 +67,7 @@ function MyCards() {
             }}
             placeholder="Search cards"
             aria-label="Search cards"
-            className="w-full rounded-full surface bg-white px-4 py-3 pl-10 text-[14px] outline-none focus:border-foreground"
+            className="cv-input w-full pl-10"
           />
         </div>
       )}
@@ -81,12 +81,12 @@ function MyCards() {
 
       <div className="mt-5">
         {isLoading ? (
-          <div className="grid gap-3">{[0,1,2].map(i => <div key={i} className="h-[148px] animate-pulse rounded-[22px] surface" />)}</div>
+          <div className="grid gap-3">{[0,1,2].map(i => <div key={i} className="h-[148px] animate-pulse rounded-[18px] surface" />)}</div>
         ) : filtered.length === 0 ? (
-          <div className="surface rounded-[22px] px-6 py-12 text-center">
+          <div className="surface rounded-[18px] px-6 py-12 text-center">
             <p className="text-[13px] text-muted-foreground">{cards.length === 0 ? "No cards yet." : "No cards match."}</p>
             {cards.length === 0 && (
-              <Link to="/cards/new" className="mt-4 inline-flex rounded-full bg-foreground px-4 py-2 text-[12px] font-medium text-background">Add a card</Link>
+              <Link to="/cards/new" className="mt-4 inline-flex rounded-xl bg-primary px-4 py-3 text-[12px] font-semibold text-primary-foreground tap">Add a card</Link>
             )}
           </div>
         ) : (
@@ -105,8 +105,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-medium tap ${
-        active ? "bg-foreground text-background" : "border border-hairline bg-white text-muted-foreground"
+      className={`shrink-0 rounded-lg px-4 py-2 text-[12px] font-semibold tap ${
+        active ? "bg-primary text-primary-foreground" : "border border-hairline bg-surface text-muted-foreground"
       }`}
     >
       {children}
