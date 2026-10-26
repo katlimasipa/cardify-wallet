@@ -9,39 +9,34 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated/favorites'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedBackupRouteImport } from './routes/_authenticated/backup'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFavoritesRouteImport } from './routes/_authenticated/favorites'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedCardsIndexRouteImport } from './routes/_authenticated/cards.index'
-import { Route as AuthenticatedCardsNewRouteImport } from './routes/_authenticated/cards.new'
 import { Route as AuthenticatedCardsIdRouteImport } from './routes/_authenticated/cards.$id'
+import { Route as AuthenticatedCardsNewRouteImport } from './routes/_authenticated/cards.new'
 
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedFavoritesRoute = AuthenticatedFavoritesRouteImport.update({
-  id: '/favorites',
-  path: '/favorites',
+const AuthenticatedBackupRoute = AuthenticatedBackupRouteImport.update({
+  id: '/backup',
+  path: '/backup',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -49,9 +44,14 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedBackupRoute = AuthenticatedBackupRouteImport.update({
-  id: '/backup',
-  path: '/backup',
+const AuthenticatedFavoritesRoute = AuthenticatedFavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedCardsIndexRoute = AuthenticatedCardsIndexRouteImport.update({
@@ -59,14 +59,14 @@ const AuthenticatedCardsIndexRoute = AuthenticatedCardsIndexRouteImport.update({
   path: '/cards/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCardsNewRoute = AuthenticatedCardsNewRouteImport.update({
-  id: '/cards/new',
-  path: '/cards/new',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedCardsIdRoute = AuthenticatedCardsIdRouteImport.update({
   id: '/cards/$id',
   path: '/cards/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCardsNewRoute = AuthenticatedCardsNewRouteImport.update({
+  id: '/cards/new',
+  path: '/cards/new',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
@@ -150,11 +150,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -164,25 +164,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/favorites': {
-      id: '/_authenticated/favorites'
-      path: '/favorites'
-      fullPath: '/favorites'
-      preLoaderRoute: typeof AuthenticatedFavoritesRouteImport
+    '/_authenticated/backup': {
+      id: '/_authenticated/backup'
+      path: '/backup'
+      fullPath: '/backup'
+      preLoaderRoute: typeof AuthenticatedBackupRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -192,11 +185,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/backup': {
-      id: '/_authenticated/backup'
-      path: '/backup'
-      fullPath: '/backup'
-      preLoaderRoute: typeof AuthenticatedBackupRouteImport
+    '/_authenticated/favorites': {
+      id: '/_authenticated/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof AuthenticatedFavoritesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cards/': {
@@ -206,18 +206,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCardsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/cards/new': {
-      id: '/_authenticated/cards/new'
-      path: '/cards/new'
-      fullPath: '/cards/new'
-      preLoaderRoute: typeof AuthenticatedCardsNewRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/cards/$id': {
       id: '/_authenticated/cards/$id'
       path: '/cards/$id'
       fullPath: '/cards/$id'
       preLoaderRoute: typeof AuthenticatedCardsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/cards/new': {
+      id: '/_authenticated/cards/new'
+      path: '/cards/new'
+      fullPath: '/cards/new'
+      preLoaderRoute: typeof AuthenticatedCardsNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
   }
