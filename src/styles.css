@@ -94,7 +94,7 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(1 0 0 / 0.1);
   --input: oklch(1 0 0 / 0.1);
-  --ring: oklch(0.65 0.2 255);
+  --ring: oklch(0.8 0.01 91);
   --card-face-foreground: oklch(0.97 0.01 85);
 
   --shadow-soft: 0 2px 8px oklch(0 0 0 / 0.28), 0 18px 36px -22px oklch(0 0 0 / 0.6);
