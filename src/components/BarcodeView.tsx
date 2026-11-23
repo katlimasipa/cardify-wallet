@@ -31,18 +31,20 @@ export function BarcodeView({ value, format, className, height = 110 }: Props) {
           background: "transparent",
           lineColor: "#0a0a0a",
         });
-      } catch {}
+      } catch {
+        // Keep the card view usable when a malformed value cannot be rendered as a barcode.
+      }
     }
   }, [value, format, height]);
 
   const isMatrix = ["QR", "DATAMATRIX"].includes((format || "").toUpperCase());
 
   return (
-    <div className={`grid place-items-center rounded-2xl bg-white p-4 ${className ?? ""}`}>
+    <div className={`grid w-full min-w-0 place-items-center rounded-2xl bg-white p-4 ${className ?? ""}`}>
       {isMatrix ? (
         <canvas ref={ref} className="h-auto w-full max-w-[280px]" />
       ) : (
-        <svg ref={svgRef} className="h-auto w-full" />
+        <svg ref={svgRef} className="block h-auto w-full max-w-full" />
       )}
     </div>
   );

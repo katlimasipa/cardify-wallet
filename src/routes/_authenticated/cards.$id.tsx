@@ -10,6 +10,7 @@ import { BrandCardArtwork } from "@/components/BrandCardArtwork";
 import { getCategory } from "@/lib/categories";
 import { matchBrand } from "@/lib/brands";
 import { getCardFace } from "@/lib/card-face";
+import { CardLoadError } from "@/components/CardLoadError";
 
 export const Route = createFileRoute("/_authenticated/cards/$id")({
   head: () => ({ meta: [{ title: "Card — CardVault" }] }),
@@ -20,7 +21,7 @@ function CardDetail() {
   const { id } = useParams({ from: "/_authenticated/cards/$id" });
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { data: card, isLoading } = useQuery({ queryKey: ["card", id], queryFn: () => getCard(id) });
+  const { data: card, isLoading, isError, refetch, isFetching } = useQuery({ queryKey: ["card", id], queryFn: () => getCard(id) });
   const [bright, setBright] = useState(false);
   const [full, setFull] = useState(false);
 
@@ -48,8 +49,17 @@ function CardDetail() {
   const brand = useMemo(() => card ? matchBrand(card.name) : null, [card]);
   const cat = useMemo(() => card ? getCategory(brand?.category ?? card.category) : null, [card, brand]);
 
-  if (isLoading || !card || !cat) {
+  if (isLoading) {
     return <div className="grid min-h-dvh place-items-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
+  }
+
+  if (isError || !card || !cat) {
+    return (
+      <div className="mx-auto grid min-h-dvh w-full max-w-[480px] content-center gap-4 px-6">
+        <CardLoadError onRetry={refetch} isRetrying={isFetching} />
+        <button onClick={() => navigate({ to: "/cards" })} className="text-[13px] font-medium text-muted-foreground underline-offset-4 hover:underline">Back to cards</button>
+      </div>
+    );
   }
 
   const face = getCardFace(card);
@@ -64,7 +74,9 @@ function CardDetail() {
           <IconButton onClick={() => favMut.mutate()}>
             <Star className={`h-4 w-4 ${card.is_favorite ? "fill-accent text-accent" : ""}`} strokeWidth={1.75} />
           </IconButton>
-          <IconButton onClick={async () => { try { await navigator.share?.({ title: card.name, text: `${card.name}: ${card.barcode_value}` }); } catch {} }}>
+          <IconButton onClick={async () => { try { await navigator.share?.({ title: card.name, text: `${card.name}: ${card.barcode_value}` }); } catch {
+            // Sharing is optional and may be unavailable in some browsers.
+          } }}>
             <Share2 className="h-4 w-4" strokeWidth={1.75} />
           </IconButton>
           <IconButton onClick={() => { if (confirm("Delete this card?")) delMut.mutate(); }}>

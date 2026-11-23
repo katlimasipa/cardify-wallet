@@ -2,19 +2,23 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
-import { listCards } from "@/lib/cards";
+import { listCards, type Card } from "@/lib/cards";
 import { AppShell } from "@/components/AppShell";
 import { CardTile } from "@/components/CardTile";
 import { CATEGORIES } from "@/lib/categories";
 import { matchBrand } from "@/lib/brands";
+import { CardLoadError } from "@/components/CardLoadError";
 
 export const Route = createFileRoute("/_authenticated/cards/")({
   head: () => ({ meta: [{ title: "My Cards — CardVault" }] }),
   component: MyCards,
 });
 
+const EMPTY_CARDS: Card[] = [];
+
 function MyCards() {
-  const { data: cards = [], isLoading } = useQuery({ queryKey: ["cards"], queryFn: listCards });
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({ queryKey: ["cards"], queryFn: listCards });
+  const cards = data ?? EMPTY_CARDS;
   const [q, setQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [cat, setCat] = useState<string>("all");
@@ -37,7 +41,7 @@ function MyCards() {
     <AppShell title="My Cards">
       <div className="mt-1 flex items-center justify-between">
         <p className="text-[13px] text-muted-foreground">
-          {filtered.length} {filtered.length === 1 ? "card" : "cards"}
+          {isError ? "Cards unavailable" : `${filtered.length} ${filtered.length === 1 ? "card" : "cards"}`}
         </p>
         <button
           type="button"
@@ -81,11 +85,17 @@ function MyCards() {
       </div>
 
       <div className="mt-6">
-        {isLoading ? (
+        {isError ? (
+          <CardLoadError onRetry={refetch} isRetrying={isFetching} />
+        ) : isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{[0,1,2].map(i => <div key={i} className="aspect-[1.586/1] animate-pulse rounded-[20px] surface" />)}</div>
         ) : filtered.length === 0 ? (
           <div className="surface rounded-[18px] px-6 py-12 text-center">
-            <p className="text-[13px] text-muted-foreground">{cards.length === 0 ? "No cards yet." : "No cards match."}</p>
+            <p className="text-[13px] text-muted-foreground">
+              {cards.length === 0
+                ? "No cards yet. If you saved cards before, sign in with the same account to find them."
+                : "No cards match."}
+            </p>
             {cards.length === 0 && (
               <Link to="/cards/new" className="mt-4 inline-flex rounded-xl bg-primary px-4 py-3 text-[12px] font-semibold text-primary-foreground tap">Add a card</Link>
             )}

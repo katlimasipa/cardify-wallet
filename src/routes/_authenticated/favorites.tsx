@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listCards } from "@/lib/cards";
 import { AppShell } from "@/components/AppShell";
 import { CardTile } from "@/components/CardTile";
+import { CardLoadError } from "@/components/CardLoadError";
 
 export const Route = createFileRoute("/_authenticated/favorites")({
   head: () => ({ meta: [{ title: "Saved — CardVault" }] }),
@@ -10,12 +11,15 @@ export const Route = createFileRoute("/_authenticated/favorites")({
 });
 
 function Favorites() {
-  const { data: cards = [], isLoading } = useQuery({ queryKey: ["cards"], queryFn: listCards });
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({ queryKey: ["cards"], queryFn: listCards });
+  const cards = data ?? [];
   const favs = cards.filter((c) => c.is_favorite);
 
   return (
     <AppShell title="Saved">
-      {isLoading ? (
+      {isError ? (
+        <CardLoadError onRetry={refetch} isRetrying={isFetching} />
+      ) : isLoading ? (
         <div className="mt-3 grid gap-3">{[0,1,2].map(i => <div key={i} className="h-[122px] animate-pulse rounded-[22px] surface" />)}</div>
       ) : favs.length === 0 ? (
         <div className="mt-12 surface rounded-[22px] px-6 py-12 text-center">

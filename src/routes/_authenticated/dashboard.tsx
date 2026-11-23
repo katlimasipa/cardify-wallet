@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { CardTile } from "@/components/CardTile";
 import { useAuth } from "@/lib/auth";
 import { getDisplayName } from "@/lib/profile";
+import { CardLoadError } from "@/components/CardLoadError";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — CardVault" }] }),
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const { user } = useAuth();
-  const { data: cards = [], isLoading } = useQuery({ queryKey: ["cards"], queryFn: listCards });
+  const { data: cards = [], isLoading, isError, refetch, isFetching } = useQuery({ queryKey: ["cards"], queryFn: listCards });
 
   const recent = [...cards]
     .filter((c) => c.last_opened_at)
@@ -33,18 +34,24 @@ function Dashboard() {
 
   return (
     <AppShell>
-      <div className="pt-[max(env(safe-area-inset-top),1rem)]">
+      <div className="pt-4">
         <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">{greeting}</p>
         <h1 className="mt-2 font-display text-[2.65rem] font-semibold leading-[0.98] tracking-[-0.05em]">{name || "Your cards"}</h1>
       </div>
 
-      <dl className="mt-7 grid grid-cols-3 gap-3 border-y border-hairline py-5">
-        <Stat label="Cards" value={cards.length} />
-        <Stat label="Saved" value={favorites.length} divide />
-        <Stat label="Scans" value={totalOpens} divide />
-      </dl>
+      {!isError && (
+        <dl className="mt-7 grid grid-cols-3 gap-3 border-y border-hairline py-5">
+          <Stat label="Cards" value={cards.length} />
+          <Stat label="Saved" value={favorites.length} divide />
+          <Stat label="Scans" value={totalOpens} divide />
+        </dl>
+      )}
 
-      {isLoading ? (
+      {isError ? (
+        <div className="mt-8">
+          <CardLoadError onRetry={refetch} isRetrying={isFetching} />
+        </div>
+      ) : isLoading ? (
         <div className="mt-8 grid gap-3">
           {[0,1,2].map(i => <div key={i} className="h-[122px] animate-pulse rounded-[22px] surface" />)}
         </div>
@@ -95,12 +102,12 @@ function Stat({ label, value, divide }: { label: string; value: number; divide?:
   );
 }
 
-function Section({ title, link, children }: { title: string; link?: { to: string; label: string }; children: React.ReactNode }) {
+function Section({ title, link, children }: { title: string; link?: { to: "/favorites"; label: string }; children: React.ReactNode }) {
   return (
     <section className="mt-8">
       <div className="mb-3 flex items-baseline justify-between">
       <h2 className="font-sans text-[1.25rem] font-semibold tracking-[-0.035em]">{title}</h2>
-        {link && <Link to={link.to as any} className="text-[13px] font-medium text-primary hover:opacity-75">{link.label}</Link>}
+        {link && <Link to={link.to} className="text-[13px] font-medium text-primary hover:opacity-75">{link.label}</Link>}
       </div>
       {children}
     </section>
@@ -112,7 +119,7 @@ function EmptyState() {
     <div className="mt-12 surface rounded-[18px] px-6 py-12 text-center">
       <h3 className="font-display text-[1.7rem] font-medium">Your vault is empty</h3>
       <p className="mx-auto mt-2 max-w-[18rem] text-[13px] text-muted-foreground">
-        Add your first loyalty card and it will appear here for instant scanning.
+        Add your first loyalty card for instant scanning. If you saved cards before, sign in with the same account to find them.
       </p>
       <Link to="/cards/new" className="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-[13px] font-semibold text-primary-foreground tap">
         Add a card

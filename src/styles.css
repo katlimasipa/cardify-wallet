@@ -172,7 +172,8 @@
   background: var(--color-surface);
   border: 1px solid var(--color-hairline);
   outline: none;
-  font-size: 0.94rem;
+  /* iOS Safari zooms the viewport when a focused input uses text smaller than 16px. */
+  font-size: 16px;
   color: var(--color-foreground);
   transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
